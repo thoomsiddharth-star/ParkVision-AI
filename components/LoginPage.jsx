@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 export function LoginPage({
-  brandName = "Watermelon",
+  brandName = "ParkVision AI",
   onGoogleLogin = () => {},
   onLogin = (email, password, remember) => {},
   onForgotPassword = () => {},
@@ -124,14 +124,22 @@ export function LoginPage({
       {/* Top Brand Bar */}
       <div className="flex items-center justify-between max-w-5xl w-full mx-auto">
         <div className="flex items-center gap-2.5">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-500 to-emerald-500 flex items-center justify-center text-white shadow-md font-bold text-xl">
-            🍉
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center text-white shadow-md border border-white/20">
+            <svg className="w-6 h-6 text-white" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M7 15V9C7 7.89543 7.89543 7 9 7H15" stroke="#38bdf8" strokeWidth="3" strokeLinecap="round"/>
+              <path d="M41 15V9C41 7.89543 40.1046 7 39 7H33" stroke="#38bdf8" strokeWidth="3" strokeLinecap="round"/>
+              <path d="M7 33V39C7 40.1046 7.89543 41 9 41H15" stroke="#38bdf8" strokeWidth="3" strokeLinecap="round"/>
+              <path d="M41 33V39C41 40.1046 40.1046 41 39 41H33" stroke="#38bdf8" strokeWidth="3" strokeLinecap="round"/>
+              <circle cx="24" cy="24" r="14.5" stroke="rgba(255,255,255,0.3)" strokeWidth="2" strokeDasharray="3 3"/>
+              <path d="M20 33V15H25.5C28.5376 15 31 17.4624 31 20.5C31 23.5376 28.5376 26 25.5 26H20" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <circle cx="25.5" cy="20.5" r="2.5" fill="#34d399"/>
+            </svg>
           </div>
           <div>
             <div className="font-extrabold text-lg tracking-tight text-slate-900 leading-none">
               {brandName}
             </div>
-            <div className="text-[10px] uppercase font-mono tracking-widest text-emerald-600 font-semibold mt-0.5">
+            <div className="text-[10px] uppercase font-mono tracking-widest text-blue-600 font-semibold mt-0.5">
               Smart Vision Platform
             </div>
           </div>
@@ -160,8 +168,20 @@ export function LoginPage({
       <div className="max-w-md w-full mx-auto my-8 bg-white rounded-3xl border border-slate-200 shadow-xl p-8 sm:p-10 relative">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-rose-500 via-rose-400 to-emerald-500 flex items-center justify-center text-white mx-auto mb-4 text-2xl shadow-lg shadow-rose-500/20">
-            {mode === "admin" ? "🛡️" : "🍉"}
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center text-white mx-auto mb-4 shadow-lg shadow-blue-500/20 border border-white/20">
+            {mode === "admin" ? (
+              <span className="text-2xl">🛡️</span>
+            ) : (
+              <svg className="w-8 h-8 text-white" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 15V9C7 7.89543 7.89543 7 9 7H15" stroke="#38bdf8" strokeWidth="3" strokeLinecap="round"/>
+                <path d="M41 15V9C41 7.89543 40.1046 7 39 7H33" stroke="#38bdf8" strokeWidth="3" strokeLinecap="round"/>
+                <path d="M7 33V39C7 40.1046 7.89543 41 9 41H15" stroke="#38bdf8" strokeWidth="3" strokeLinecap="round"/>
+                <path d="M41 33V39C41 40.1046 40.1046 41 39 41H33" stroke="#38bdf8" strokeWidth="3" strokeLinecap="round"/>
+                <circle cx="24" cy="24" r="14.5" stroke="rgba(255,255,255,0.3)" strokeWidth="2" strokeDasharray="3 3"/>
+                <path d="M20 33V15H25.5C28.5376 15 31 17.4624 31 20.5C31 23.5376 28.5376 26 25.5 26H20" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <circle cx="25.5" cy="20.5" r="2.5" fill="#34d399"/>
+              </svg>
+            )}
           </div>
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">
             {mode === "admin"

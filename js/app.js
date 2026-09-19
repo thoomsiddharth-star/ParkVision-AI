@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (linkPrivacy) {
       linkPrivacy.addEventListener('click', (e) => {
         e.preventDefault();
-        showToast("Watermelon Privacy Policy: Zero tracking of vehicle telemetry without consent.", "info");
+        showToast("ParkVision AI Privacy Policy: Zero tracking of vehicle telemetry without consent.", "info");
       });
     }
     if (linkTerms) {

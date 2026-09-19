@@ -3,7 +3,7 @@ import LoginPage from "./index";
 export default function Auth4Demo() {
   return (
     <LoginPage
-      brandName="Watermelon"
+      brandName="ParkVision AI"
       onGoogleLogin={() => console.log("Google login")}
       onLogin={(email, password, remember) =>
         console.log("Login", email, password, remember)
