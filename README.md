@@ -43,6 +43,18 @@ ParkVision AI is a smart parking solution that uses camera-based computer vision
    - Charts (via Chart.js): Hourly Occupancy trend, Zone capacity breakdown, Live rolling availability stream.
    - Live activity stream of vehicle arrivals and departures.
 
+8. **Admin Operations Portal (`admin-dashboard.html`)**:
+   - Dedicated administrative suite with **three top navigating headsets**:
+     1. **📐 Headset 1: Floor Plan & Coverage Boundary**: Insert custom floor plan blueprints or templates and define the *exact area the camera should cover* — covering not more and not less than that.
+     2. **📹 Headset 2: Live Camera Output (Traffic-Adaptive 10–30s Scan)**: Real-time CCTV feed with YOLOv8 vehicle detections, live countdown timer, and adaptive scan intervals dynamically varying between 10s and 30s based on vehicle traffic.
+     3. **📊 Headset 3: Traffic & Space Management**: Facility KPIs, bay status overrides (Lock, Free, Block), and live vehicle arrival/departure audit logs.
+   - Bidirectional navigation: Prominent `← Back to User Panel` button and quick-switch sub-bar to transition between admin and driver portals at any time.
+
+9. **Dedicated Admin Login (`admin-login.html`)**:
+   - Standalone login portal for authorized personnel.
+   - Credentials: `admin@parkvision.ai` / `theasp@1234`.
+   - Automatic credential recognition from the user login modal with instant redirection.
+
 ---
 
 ## 🚀 Quick Start
