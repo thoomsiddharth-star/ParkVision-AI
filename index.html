@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ParkVision AI — Real-Time Smart Parking Detection & Navigation</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Chart.js CDN for Operator Dashboard Analytics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="styles.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          },
+          colors: {
+            primary: {
+              dark: '#0f172a',
+              navy: '#1e293b'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col antialiased">
+
+  <!-- ============================================================== -->
+  <!-- 13. NAVIGATION BAR                                             -->
+  <!-- ============================================================== -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        
+        <!-- Logo & Brand Name -->
+        <div class="flex items-center gap-3">
+          <a href="#home" data-route="home" class="flex items-center gap-2.5 group">
+            <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:bg-blue-700 transition">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1"></path>
+              </svg>
+            </div>
+            <div>
+              <div class="font-bold text-lg text-slate-900 tracking-tight leading-tight">ParkVision AI</div>
+              <div class="text-[10px] uppercase font-mono tracking-widest text-blue-600 font-semibold">Vision Intelligence</div>
+            </div>
+          </a>
+        </div>
+
+        <!-- Desktop Navigation Links -->
+        <nav class="hidden md:flex items-center space-x-1 lg:space-x-2">
+          <a href="#home" data-route="home" class="px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-blue-600 hover:bg-slate-100 transition">Home</a>
+          <a href="#live" data-route="live" class="px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-blue-600 hover:bg-slate-100 transition flex items-center gap-1.5">
+            <span>Live Parking</span>
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          </a>
+          <a href="#find" data-route="find" class="px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-blue-600 hover:bg-slate-100 transition">Find Parking</a>
+          <a href="#ai" data-route="ai" class="px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-blue-600 hover:bg-slate-100 transition flex items-center gap-1.5">
+            <span>AI Detection</span>
+            <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-blue-100 text-blue-700 font-bold">CCTV</span>
+          </a>
+          <a href="#dashboard" data-route="dashboard" class="px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-blue-600 hover:bg-slate-100 transition">Dashboard</a>
+          
+          <!-- Protected Admin Only Links (Hidden by default for non-admins) -->
+          <div id="admin-nav-group" class="hidden flex items-center space-x-1 lg:space-x-2 border-l border-slate-200 pl-2 ml-1">
+            <a href="#admin-dashboard" data-route="admin-dashboard" class="px-3 py-1.5 rounded-lg text-xs font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 transition flex items-center gap-1">
+              <span>🛡️ Admin Dashboard</span>
+            </a>
+            <a href="#admin-floorplan" data-route="admin-floorplan" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 transition">Floor Plan</a>
+            <a href="#admin-cameras" data-route="admin-cameras" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 transition">Cameras</a>
+            <a href="#admin-users" data-route="admin-users" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-100 transition">Users</a>
+          </div>
+        </nav>
+
+        <!-- Right Side CTA, Auth Badge & Demo Mode -->
+        <div class="hidden md:flex items-center gap-3">
+          <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-[11px] font-medium" title="Simulation active for hackathon demo">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+            <span>DEMO MODE</span>
+          </div>
+
+          <!-- Auth Status / User Badge Container -->
+          <div id="auth-status-container" class="flex items-center gap-2">
+            <!-- Unauthenticated State -->
+            <button id="btn-open-login" class="inline-flex items-center justify-center px-3.5 py-1.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs font-semibold transition">
+              🔐 Sign In
+            </button>
+            
+            <!-- Authenticated User/Admin Badge (hidden when logged out) -->
+            <div id="user-badge" class="hidden flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-xs font-medium">
+              <span id="user-role-badge" class="px-1.5 py-0.5 rounded font-mono font-bold text-[10px] bg-blue-100 text-blue-700">USER</span>
+              <span id="user-email-label" class="text-slate-700 font-mono text-[11px] max-w-[120px] truncate">user@parkvision.ai</span>
+              <button id="btn-logout" class="ml-1 text-slate-500 hover:text-rose-600 font-bold transition" title="Logout">
+                🚪
+              </button>
+            </div>
+          </div>
+
+          <a href="#find" data-route="find" class="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-sm shadow-blue-500/25 transition">
+            Find Parking
+          </a>
+        </div>
+
+        <!-- Mobile Hamburger Button -->
+        <div class="flex md:hidden items-center gap-2">
+          <button id="mobile-menu-btn" class="p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus:outline-none" aria-label="Toggle Navigation">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Mobile Drawer Menu -->
+    <div id="mobile-menu" class="md:hidden hidden border-t border-slate-200 bg-white px-4 pt-2 pb-4 space-y-1">
+      <a href="#home" data-route="home" class="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 hover:bg-slate-100">Home</a>
+      <a href="#live" data-route="live" class="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 hover:bg-slate-100">Live Parking</a>
+      <a href="#find" data-route="find" class="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 hover:bg-slate-100">Find Parking</a>
+      <a href="#ai" data-route="ai" class="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 hover:bg-slate-100">AI Detection</a>
+      <a href="#dashboard" data-route="dashboard" class="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 hover:bg-slate-100">Dashboard</a>
+      <div id="mobile-admin-links" class="hidden pt-2 border-t border-slate-200 space-y-1">
+        <div class="text-[10px] font-mono text-amber-700 font-bold px-3 uppercase tracking-wider">Admin Tools</div>
+        <a href="#admin-dashboard" data-route="admin-dashboard" class="block px-3 py-2 rounded-lg text-base font-medium text-amber-800 bg-amber-50">Admin Dashboard</a>
+        <a href="#admin-floorplan" data-route="admin-floorplan" class="block px-3 py-2 rounded-lg text-base font-medium text-slate-700">Floor Plan</a>
+        <a href="#admin-cameras" data-route="admin-cameras" class="block px-3 py-2 rounded-lg text-base font-medium text-slate-700">Cameras</a>
+        <a href="#admin-users" data-route="admin-users" class="block px-3 py-2 rounded-lg text-base font-medium text-slate-700">Users</a>
+      </div>
+      <div class="pt-2 flex flex-col gap-2">
+        <button id="mobile-btn-open-login" class="w-full text-center px-4 py-2 rounded-xl border border-slate-300 text-slate-800 font-semibold">Sign In / Admin Login</button>
+        <a href="#find" data-route="find" class="w-full block text-center px-4 py-2.5 rounded-xl bg-blue-600 text-white font-semibold">Find Parking</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================================== -->
+  <!-- MAIN CONTENT SPA VIEWS                                         -->
+  <!-- ============================================================== -->
+  <main class="flex-grow">
+
+    <!-- ============================================================ -->
+    <!-- VIEW 1: LANDING PAGE (Section 2 & 3)                         -->
+    <!-- ============================================================ -->
+    <section id="view-home" class="page-view">
+      
+      <!-- HERO SECTION -->
+      <div class="relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-white pt-16 pb-24 px-4 sm:px-6 lg:px-8">
+        <!-- Background Grid Pattern -->
+        <div class="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-35 pointer-events-none"></div>
+
+        <div class="max-w-6xl mx-auto relative z-10 text-center">
+          
+          <!-- AI Badge -->
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-400 text-xs font-semibold mb-6 backdrop-blur-md">
+            <span class="w-2 h-2 rounded-full bg-blue-400 animate-ping"></span>
+            <span>AI-Powered • Real-Time Detection</span>
+          </div>
+
+          <p class="text-xs font-mono tracking-widest text-blue-400 uppercase font-semibold mb-2">PARKVISION AI</p>
+
+          <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight">
+            Find Your Parking. <br class="hidden sm:inline" />
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-sky-300 to-emerald-400">
+              Before You Arrive.
+            </span>
+          </h1>
+
+          <p class="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed">
+            Real-time AI-powered parking detection that helps drivers find available spaces faster.
+          </p>
+
+          <!-- CTAs -->
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-14">
+            <a href="#find" data-route="find" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-base shadow-lg shadow-blue-500/30 transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+              <span>Find Parking</span>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </a>
+            <a href="#live" data-route="live" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-base border border-slate-700 transition flex items-center justify-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span>View Live Parking</span>
+            </a>
+          </div>
+
+          <!-- PROMISE STATEMENT HIGHLIGHT CARD (EXACT VERBATIM) -->
+          <div class="max-w-3xl mx-auto bg-slate-800/80 border border-blue-500/30 rounded-2xl p-6 sm:p-7 backdrop-blur-xl shadow-2xl text-left relative overflow-hidden">
+            <div class="absolute top-0 right-0 transform translate-x-8 -translate-y-8 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="flex items-center gap-2 text-xs font-mono uppercase text-blue-400 font-bold tracking-wider mb-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              <span>Core Solution Mandate</span>
+            </div>
+            <blockquote class="text-base sm:text-lg italic font-medium text-slate-100 border-l-4 border-blue-500 pl-4 py-1 my-1">
+              “Develop a camera-based solution that detects available and occupied parking spaces in real time and provides users with parking availability and navigation information.”
+            </blockquote>
+            <div class="flex items-center justify-between text-[11px] text-slate-400 mt-3 pt-3 border-t border-slate-700/60 font-mono">
+              <span>Standard: Autonomous Smart City Sensing</span>
+              <span class="text-emerald-400 font-semibold">● Vision Model Synchronized</span>
+            </div>
+          </div>
+
+          <!-- MINI-LOT LIVE VISUAL REPRESENTATION -->
+          <div class="mt-14 max-w-4xl mx-auto bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-2xl text-left">
+            <div class="flex items-center justify-between mb-3 text-xs">
+              <div class="flex items-center gap-2">
+                <span class="font-mono font-bold text-slate-300">SMART LOT SENSING PREVIEW (NORTH BAY)</span>
+                <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-mono">● LIVE CV STREAM</span>
+              </div>
+              <span class="text-slate-400 text-[11px]">Real-time status changes active</span>
+            </div>
+            <!-- Dynamic Mini Lot Grid -->
+            <div id="hero-mini-lot" class="grid grid-cols-5 sm:grid-cols-10 gap-2">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- 3. HOW IT WORKS SECTION                                      -->
+      <!-- ============================================================ -->
+      <section class="py-20 bg-white border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <div class="text-center max-w-3xl mx-auto mb-16">
+            <span class="text-xs font-mono uppercase tracking-widest text-blue-600 font-bold">End-to-End Pipeline</span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mt-2 mb-4">How It Works</h2>
+            <p class="text-base text-slate-600">
+              An intelligent computer vision workflow transforming live optical feeds into seamless parking guidance.
+            </p>
+          </div>
+
+          <!-- 5 Steps Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-16">
+            
+            <!-- Step 1 -->
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 relative hover:shadow-lg transition-all">
+              <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 font-mono font-bold text-sm flex items-center justify-center mb-4">
+                01
+              </div>
+              <h3 class="font-bold text-base text-slate-900 mb-2">1. CAMERA</h3>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                Parking cameras continuously capture the parking area.
+              </p>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 relative hover:shadow-lg transition-all">
+              <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 font-mono font-bold text-sm flex items-center justify-center mb-4">
+                02
+              </div>
+              <h3 class="font-bold text-base text-slate-900 mb-2">2. AI DETECTION</h3>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                Computer vision detects vehicles and analyzes individual parking spaces.
+              </p>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 relative hover:shadow-lg transition-all">
+              <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 font-mono font-bold text-sm flex items-center justify-center mb-4">
+                03
+              </div>
+              <h3 class="font-bold text-base text-slate-900 mb-2">3. SPACE ANALYSIS</h3>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                The system determines whether each parking space is AVAILABLE or OCCUPIED.
+              </p>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 relative hover:shadow-lg transition-all">
+              <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 font-mono font-bold text-sm flex items-center justify-center mb-4">
+                04
+              </div>
+              <h3 class="font-bold text-base text-slate-900 mb-2">4. REAL-TIME UPDATE</h3>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                Parking availability is updated on the dashboard.
+              </p>
+            </div>
+
+            <!-- Step 5 -->
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 relative hover:shadow-lg transition-all">
+              <div class="w-10 h-10 rounded-xl bg-sky-100 text-sky-700 font-mono font-bold text-sm flex items-center justify-center mb-4">
+                05
+              </div>
+              <h3 class="font-bold text-base text-slate-900 mb-2">5. NAVIGATION</h3>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                Users can select a parking location and receive navigation information.
+              </p>
+            </div>
+
+          </div>
+
+          <!-- VISUAL FLOW PIPELINE REPRESENTATION -->
+          <div class="bg-slate-900 text-white rounded-2xl p-6 sm:p-8 max-w-4xl mx-auto shadow-xl">
+            <div class="text-center text-xs font-mono uppercase text-blue-400 font-bold mb-6 tracking-widest">
+              SYSTEM ARCHITECTURE DATA FLOW
+            </div>
+            <div class="flex flex-wrap items-center justify-center gap-3 text-center text-xs font-semibold">
+              <div class="px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-200">
+                📹 Camera
+              </div>
+              <div class="text-blue-400 font-bold">↓</div>
+              <div class="px-4 py-2.5 rounded-xl bg-blue-900/60 border border-blue-600 text-blue-200">
+                🤖 AI Detection
+              </div>
+              <div class="text-blue-400 font-bold">↓</div>
+              <div class="px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-200">
+                🅿️ Parking Space Analysis
+              </div>
+              <div class="text-blue-400 font-bold">↓</div>
+              <div class="px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-200">
+                ⚡ Real-Time Database
+              </div>
+              <div class="text-blue-400 font-bold">↓</div>
+              <div class="px-4 py-2.5 rounded-xl bg-indigo-900/60 border border-indigo-500 text-indigo-200">
+                💻 Web Dashboard
+              </div>
+              <div class="text-blue-400 font-bold">↓</div>
+              <div class="px-4 py-2.5 rounded-xl bg-emerald-900/60 border border-emerald-500 text-emerald-200">
+                🧭 Navigation
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- VIEW 2: LIVE PARKING DASHBOARD (Section 4 & 15)              -->
+    <!-- ============================================================ -->
+    <section id="view-live" class="page-view hidden py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      
+      <!-- Top Title & Live Status Indicator -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between pb-6 mb-8 border-b border-slate-200 gap-4">
+        <div>
+          <div class="flex items-center gap-3">
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">LIVE PARKING STATUS</h1>
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs font-bold font-mono">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>● LIVE</span>
+            </div>
+          </div>
+          <p class="text-slate-500 text-sm mt-1">Real-time parking availability</p>
+        </div>
+
+        <!-- Last Updated & Simulation Controls -->
+        <div class="flex items-center flex-wrap gap-3">
+          <span id="stat-last-updated" class="text-xs font-mono text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">
+            Last updated: Just now
+          </span>
+
+          <button id="sim-toggle-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-medium transition shadow-sm">
+            <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>Pause Simulation</span>
+          </button>
+
+          <button id="sim-arrival-btn" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 hover:bg-blue-100 text-blue-700 text-xs font-medium transition">
+            <span>⚡ Simulate Pulse</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- STATISTICS CARDS (Section 4) -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        
+        <!-- Total Spaces -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+          <div class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">TOTAL SPACES</div>
+          <div id="stat-total-spaces" class="text-3xl font-extrabold text-slate-900 font-mono">40</div>
+          <div class="text-[11px] text-slate-500 mt-1">Monitored bays</div>
+        </div>
+
+        <!-- Available -->
+        <div class="bg-white rounded-2xl border border-emerald-200 p-5 shadow-sm bg-emerald-50/20">
+          <div class="text-xs font-semibold uppercase tracking-wider text-emerald-700 mb-1">AVAILABLE</div>
+          <div id="stat-available-spaces" class="text-3xl font-extrabold text-emerald-600 font-mono">12</div>
+          <div class="text-[11px] text-emerald-700 mt-1">Ready for occupancy</div>
+        </div>
+
+        <!-- Occupied -->
+        <div class="bg-white rounded-2xl border border-rose-200 p-5 shadow-sm bg-rose-50/20">
+          <div class="text-xs font-semibold uppercase tracking-wider text-rose-700 mb-1">OCCUPIED</div>
+          <div id="stat-occupied-spaces" class="text-3xl font-extrabold text-rose-600 font-mono">28</div>
+          <div class="text-[11px] text-rose-700 mt-1">Vehicles detected</div>
+        </div>
+
+        <!-- Occupancy -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+          <div class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">OCCUPANCY</div>
+          <div id="stat-occupancy-rate" class="text-3xl font-extrabold text-slate-800 font-mono">70%</div>
+          <div class="text-[11px] text-slate-500 mt-1">Current utilization</div>
+        </div>
+
+      </div>
+
+      <!-- Filter Tabs & Legend -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div class="inline-flex rounded-xl bg-slate-200/80 p-1 text-xs font-semibold">
+          <button class="grid-filter-btn px-3.5 py-1.5 rounded-lg bg-blue-600 text-white shadow-sm transition" data-filter="all">All (40)</button>
+          <button class="grid-filter-btn px-3.5 py-1.5 rounded-lg bg-transparent text-slate-700 hover:text-slate-900 transition" data-filter="available">Available</button>
+          <button class="grid-filter-btn px-3.5 py-1.5 rounded-lg bg-transparent text-slate-700 hover:text-slate-900 transition" data-filter="occupied">Occupied</button>
+        </div>
+
+        <!-- Legend -->
+        <div class="flex items-center gap-4 text-xs font-semibold">
+          <div class="flex items-center gap-1.5">
+            <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+            <span class="text-slate-700">Green = AVAILABLE</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="w-3 h-3 rounded-full bg-rose-500"></span>
+            <span class="text-slate-700">Red = OCCUPIED</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+            <span class="text-slate-700">Amber = UNCERTAIN</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- VISUAL PARKING GRID (A01 - A40) -->
+      <div id="parking-grid-container" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-8 gap-3">
+        <!-- Rendered dynamically via app.js -->
+      </div>
+
+      <!-- BOTTOM BANNER WHEN SPACE SELECTED -->
+      <div id="selected-space-bar" class="hidden fixed bottom-6 left-1/2 transform -translate-x-1/2 max-w-lg w-full px-4 z-40">
+        <div class="bg-slate-900 text-white rounded-2xl p-4 shadow-2xl border border-blue-500/50 flex items-center justify-between backdrop-blur-md">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center font-bold text-xs">🅿️</div>
+            <div>
+              <div id="selected-space-label" class="font-bold text-sm">Space A12 selected</div>
+              <div class="text-xs text-slate-400">Ready to navigate to Central Parking Hub</div>
+            </div>
+          </div>
+          <button id="banner-navigate-btn" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition shadow-md">
+            Navigate
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- VIEW 3: FIND PARKING (Section 6)                             -->
+    <!-- ============================================================ -->
+    <section id="view-find" class="page-view hidden py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      
+      <div class="max-w-3xl mb-8">
+        <span class="text-xs font-mono uppercase tracking-widest text-blue-600 font-bold">Nearby Facilities</span>
+        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight mt-1">Find Parking</h1>
+        <p class="text-slate-500 text-sm mt-1">
+          Discover available parking spots around you in real time with AI-driven availability prediction.
+        </p>
+      </div>
+
+      <!-- Search & Filters -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm mb-8 flex flex-col sm:flex-row gap-3">
+        <div class="relative flex-grow">
+          <svg class="w-5 h-5 text-slate-400 absolute left-3.5 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          <input type="text" id="search-facility-input" placeholder="Search parking locations by name or street..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-semibold text-slate-500">Demo City:</span>
+          <span class="text-xs font-bold text-slate-800 bg-slate-100 px-3 py-2 rounded-lg border border-slate-200">Downtown Metro Area</span>
+        </div>
+      </div>
+
+      <!-- Facilities Cards Grid -->
+      <div id="facilities-list-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Rendered via JS -->
+      </div>
+
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- VIEW 4: AI DETECTION (Section 5 & 17)                        -->
+    <!-- ============================================================ -->
+    <section id="view-ai" class="page-view hidden py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      
+      <!-- Top Title & Honesty Badges -->
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between pb-6 mb-6 border-b border-slate-200 gap-4">
+        <div>
+          <div class="flex items-center gap-3">
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">AI Detection</h1>
+            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800">
+              AI Detection Demo
+            </span>
+          </div>
+          <p class="text-slate-500 text-sm mt-1">
+            Visual demonstration of real-time camera-based vehicle detection and slot occupancy analysis.
+          </p>
+        </div>
+
+        <!-- Honest Disclosure Requirement Label (Section 5 & 17) -->
+        <div class="flex items-center gap-2 bg-amber-50 border border-amber-300 rounded-xl px-4 py-2 text-amber-900 text-xs font-semibold">
+          <svg class="w-4 h-4 text-amber-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <span>DEMO MODE — Simulated real-time detection</span>
+        </div>
+      </div>
+
+      <!-- Main Camera + Telemetry Layout -->
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        
+        <!-- Large Video/Camera Panel (Col 3/4) -->
+        <div class="lg:col-span-3 bg-slate-950 rounded-2xl border border-slate-800 p-4 shadow-2xl relative overflow-hidden flex flex-col">
+          
+          <!-- Camera Feed Header Controls -->
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800 text-xs mb-3">
+            <div class="flex items-center gap-2">
+              <span class="text-slate-400 font-mono">FEED SOURCE:</span>
+              <button id="cam-switch-01" class="px-2.5 py-1 rounded bg-blue-600 text-white font-mono font-bold text-xs transition">CAM-01 (North Lot)</button>
+              <button id="cam-switch-02" class="px-2.5 py-1 rounded bg-slate-700 text-slate-300 font-mono text-xs transition hover:bg-slate-600">CAM-02 (South Deck)</button>
+            </div>
+
+            <!-- Scanner toggle -->
+            <div class="flex items-center gap-3 text-slate-400 font-mono text-[11px]">
+              <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                <input type="checkbox" id="toggle-bbox-chk" checked class="rounded bg-slate-800 border-slate-700 text-blue-600">
+                <span>Boxes</span>
+              </label>
+              <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                <input type="checkbox" id="toggle-conf-chk" checked class="rounded bg-slate-800 border-slate-700 text-blue-600">
+                <span>Confidence</span>
+              </label>
+              <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                <input type="checkbox" id="toggle-scan-chk" checked class="rounded bg-slate-800 border-slate-700 text-blue-600">
+                <span>Scanline</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Interactive HTML5 Canvas CCTV Container -->
+          <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-slate-900 border border-slate-800 flex items-center justify-center">
+            <!-- Subtle HUD brackets -->
+            <div class="hud-corner hud-tl"></div>
+            <div class="hud-corner hud-tr"></div>
+            <div class="hud-corner hud-bl"></div>
+            <div class="hud-corner hud-br"></div>
+
+            <canvas id="aiCameraCanvas" class="w-full h-full object-cover block"></canvas>
+          </div>
+
+          <!-- Video Feed Footer Status -->
+          <div class="mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono text-slate-400">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+              <span class="text-slate-200">Neural Inference Stream Active</span>
+            </div>
+            <span>Protocol: WebSocket / RTSP Stream Simulated</span>
+          </div>
+        </div>
+
+        <!-- AI Detection Information Beside the Camera (Section 5) -->
+        <div class="space-y-4">
+          
+          <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+            <h3 class="text-xs font-mono uppercase tracking-wider text-slate-400 font-bold mb-4">
+              AI INFERENCE TELEMETRY
+            </h3>
+
+            <!-- AI STATUS -->
+            <div class="pb-3 mb-3 border-b border-slate-100">
+              <div class="text-xs font-semibold text-slate-500 uppercase">AI STATUS</div>
+              <div class="text-sm font-bold text-emerald-600 flex items-center gap-1.5 mt-0.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>● Detection Active</span>
+              </div>
+            </div>
+
+            <!-- MODEL -->
+            <div class="pb-3 mb-3 border-b border-slate-100">
+              <div class="text-xs font-semibold text-slate-500 uppercase">MODEL</div>
+              <div class="text-sm font-bold text-slate-800 font-mono mt-0.5">YOLO Computer Vision</div>
+              <div class="text-[11px] text-slate-400">YOLOv8 Real-Time TensorRT</div>
+            </div>
+
+            <!-- DETECTION -->
+            <div class="pb-3 mb-3 border-b border-slate-100">
+              <div class="text-xs font-semibold text-slate-500 uppercase">DETECTION</div>
+              <div class="text-sm font-bold text-slate-800 mt-0.5">Vehicle Detection</div>
+              <div class="text-[11px] text-slate-400">Multi-class: Sedan, SUV, Van</div>
+            </div>
+
+            <!-- PROCESSING -->
+            <div class="pb-3 mb-3 border-b border-slate-100">
+              <div class="text-xs font-semibold text-slate-500 uppercase">PROCESSING</div>
+              <div class="text-sm font-bold text-blue-600 font-mono mt-0.5">Real Time</div>
+              <div class="text-[11px] text-slate-400">14ms latency / 30 FPS</div>
+            </div>
+
+            <!-- CONFIDENCE -->
+            <div>
+              <div class="text-xs font-semibold text-slate-500 uppercase">CONFIDENCE</div>
+              <div id="ai-cam-confidence" class="text-2xl font-extrabold text-slate-900 font-mono mt-0.5">96%</div>
+              <div class="w-full bg-slate-100 rounded-full h-1.5 mt-2">
+                <div class="bg-emerald-500 h-1.5 rounded-full" style="width: 96%"></div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Computer Vision Architecture Diagram / Info Card -->
+          <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-5 shadow-sm border border-slate-700">
+            <h4 class="text-xs font-mono uppercase text-blue-400 font-bold mb-2">INTEGRATION READY</h4>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              This prototype is built with a modular <code class="text-blue-300">ParkingService</code> ready for direct connection to an OpenCV & Ultralytics YOLO Python backend.
+            </p>
+            <div class="mt-3 pt-3 border-t border-slate-700 text-[11px] font-mono text-slate-400">
+              Backend: FastAPI / OpenCV / PyTorch
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- VIEW 5: PARKING DETAILS (Section 8)                          -->
+    <!-- ============================================================ -->
+    <section id="view-details" class="page-view hidden py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      
+      <!-- Facility Header -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm mb-8">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 mb-2">
+              Facility Overview
+            </div>
+            <h1 id="details-facility-name" class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Central Parking Hub</h1>
+            <p id="details-facility-address" class="text-slate-500 text-sm mt-0.5">450 Innovation Way, Downtown</p>
+          </div>
+
+          <!-- Real-Time Statistics (Section 8) -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+            <div class="bg-slate-50 border border-slate-100 rounded-xl p-3">
+              <div class="text-[11px] text-slate-500 uppercase font-semibold">Total spaces</div>
+              <div id="details-total-spaces" class="text-xl font-bold font-mono text-slate-900">40</div>
+            </div>
+            <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-3">
+              <div class="text-[11px] text-emerald-700 uppercase font-semibold">Available</div>
+              <div id="details-available" class="text-xl font-bold font-mono text-emerald-600">12</div>
+            </div>
+            <div class="bg-rose-50 border border-rose-100 rounded-xl p-3">
+              <div class="text-[11px] text-rose-700 uppercase font-semibold">Occupied</div>
+              <div id="details-occupied" class="text-xl font-bold font-mono text-rose-600">28</div>
+            </div>
+            <div class="bg-slate-50 border border-slate-100 rounded-xl p-3">
+              <div class="text-[11px] text-slate-500 uppercase font-semibold">Occupancy</div>
+              <div id="details-occupancy-rate" class="text-xl font-bold font-mono text-slate-800">70%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Visual Parking Layout & Space Selection -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="font-bold text-lg text-slate-900">Select an Available Space</h2>
+              <p class="text-xs text-slate-500">Click any green bay to assign your spot before arriving.</p>
+            </div>
+            <span class="text-xs font-mono text-slate-400">Ground Floor Bay Layout</span>
+          </div>
+
+          <!-- Visual Layout Grid -->
+          <div id="details-bays-layout" class="grid grid-cols-5 sm:grid-cols-8 gap-2">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+
+        <!-- Space Selection Action Card -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
+          <div>
+            <h3 class="font-bold text-base text-slate-900 mb-1">Assigned Space</h3>
+            <p class="text-xs text-slate-500 mb-4">Your reserved destination spot</p>
+
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 text-center mb-6">
+              <div id="details-selected-status-label" class="font-bold text-base text-blue-600 font-mono">
+                Space A12 selected
+              </div>
+              <div class="text-xs text-slate-500 mt-1">Ground Floor (North Deck)</div>
+            </div>
+
+            <div class="space-y-2 text-xs text-slate-600 mb-6">
+              <div class="flex justify-between py-1 border-b border-slate-100">
+                <span>Navigation Est:</span>
+                <span class="font-semibold text-slate-800">8 mins (2.4 km)</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-slate-100">
+                <span>Rate:</span>
+                <span class="font-semibold text-slate-800">$4.50 / hour</span>
+              </div>
+              <div class="flex justify-between py-1 border-b border-slate-100">
+                <span>Hold Period:</span>
+                <span class="font-semibold text-slate-800">15 min grace arrival</span>
+              </div>
+            </div>
+          </div>
+
+          <button id="details-navigate-btn" class="w-full py-3.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition shadow-md shadow-blue-500/20 flex items-center justify-center gap-2">
+            <span>NAVIGATE TO PARKING</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          </button>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- VIEW 6: NAVIGATION (Section 7)                               -->
+    <!-- ============================================================ -->
+    <section id="view-navigate" class="page-view hidden py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      
+      <div class="max-w-3xl mb-6">
+        <span class="text-xs font-mono uppercase tracking-widest text-blue-600 font-bold">Turn-by-Turn Guidance</span>
+        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight mt-1">Navigation Information</h1>
+        <p class="text-slate-500 text-sm mt-1">
+          Route preview to your chosen parking destination.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Map Style Interface / Mockup -->
+        <div class="lg:col-span-2 bg-slate-900 rounded-2xl border border-slate-800 p-4 shadow-xl relative overflow-hidden flex flex-col justify-between min-h-[420px]">
+          
+          <!-- Top Map Overlay Status -->
+          <div class="flex items-center justify-between z-10">
+            <div class="bg-slate-800/90 text-white px-3 py-1.5 rounded-lg text-xs font-mono border border-slate-700 flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-blue-400 animate-ping"></span>
+              <span>GPS ROUTE ACTIVE</span>
+            </div>
+            <div id="nav-selected-space-badge" class="bg-emerald-500 text-emerald-950 font-bold px-3 py-1.5 rounded-lg text-xs font-mono shadow-sm">
+              Assigned Bay: A12
+            </div>
+          </div>
+
+          <!-- Stylized Vector Map Graphic -->
+          <div class="relative flex-grow flex items-center justify-center my-4">
+            <svg class="w-full h-64 max-w-lg" viewBox="0 0 500 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- City Grid Background Roads -->
+              <path d="M50 0 V300 M150 0 V300 M250 0 V300 M350 0 V300 M450 0 V300" stroke="#1e293b" stroke-width="6"/>
+              <path d="M0 50 H500 M0 150 H500 M0 250 H500" stroke="#1e293b" stroke-width="6"/>
+              
+              <!-- Route Path with glowing line -->
+              <path class="map-route-path" d="M 60 250 L 150 250 L 150 150 L 350 150 L 350 70 L 420 70" stroke="#3b82f6" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+              
+              <!-- Start Point -->
+              <circle cx="60" cy="250" r="10" fill="#2563eb" stroke="#ffffff" stroke-width="3"/>
+              <text x="60" y="280" fill="#94a3b8" font-size="11" font-family="Inter" text-anchor="middle" font-weight="bold">You (Current)</text>
+
+              <!-- Destination Point -->
+              <circle cx="420" cy="70" r="12" fill="#10b981" stroke="#ffffff" stroke-width="3"/>
+              <text x="420" y="45" fill="#34d399" font-size="12" font-family="Inter" text-anchor="middle" font-weight="bold">Central Parking Hub</text>
+            </svg>
+          </div>
+
+          <!-- Map Footer Note -->
+          <div class="z-10 bg-slate-800/80 rounded-xl p-3 border border-slate-700/80 text-[11px] text-slate-300 flex items-center justify-between">
+            <span>Simulated Route Mockup (Hackathon Prototype)</span>
+            <a id="nav-external-maps-btn" href="#" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 font-semibold underline flex items-center gap-1">
+              <span>Open in Google Maps</span>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+            </a>
+          </div>
+
+        </div>
+
+        <!-- Navigation Summary & CTAs (Section 7) -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="text-xs font-mono uppercase tracking-wider text-slate-400 font-bold mb-2">Destination</div>
+            <h2 id="nav-destination-name" class="text-2xl font-extrabold text-slate-900">Central Parking Hub</h2>
+            <p id="nav-destination-address" class="text-slate-500 text-xs mt-0.5 mb-6">450 Innovation Way, Downtown</p>
+
+            <!-- Metrics Highlight (Section 7) -->
+            <div class="grid grid-cols-2 gap-3 mb-6">
+              <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 text-center">
+                <div class="text-xs text-slate-500 font-semibold uppercase">Distance</div>
+                <div id="nav-distance-text" class="text-2xl font-black text-slate-900 font-mono mt-0.5">2.4 km</div>
+              </div>
+              <div class="p-4 rounded-xl bg-blue-50 border border-blue-100 text-center">
+                <div class="text-xs text-blue-700 font-semibold uppercase">Est. Travel Time</div>
+                <div id="nav-time-text" class="text-2xl font-black text-blue-600 font-mono mt-0.5">8 min</div>
+              </div>
+            </div>
+
+            <!-- Parking Availability in destination -->
+            <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-semibold flex items-center justify-between mb-6">
+              <span class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span id="nav-available-text">12 spaces available</span>
+              </span>
+              <span class="text-emerald-700 font-mono">Live Sensing</span>
+            </div>
+
+            <!-- Active Guidance Box (Hidden until started) -->
+            <div id="nav-guidance-active-box" class="hidden p-4 rounded-xl bg-slate-900 text-white text-xs mb-4">
+              <div class="flex items-center gap-2 text-emerald-400 font-bold font-mono mb-1">
+                <span>▲ NEXT STEP (In 300m)</span>
+              </div>
+              <div class="text-sm font-semibold">Turn right onto Silicon Blvd toward Bay A</div>
+              <div class="text-slate-400 text-[11px] mt-1">Directing to bay entrance sensors</div>
+            </div>
+          </div>
+
+          <div>
+            <button id="start-navigation-action" class="w-full py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-sm tracking-wider uppercase transition shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+              <span>START NAVIGATION</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- VIEW 7: ADMIN / OPERATOR DASHBOARD (Section 11)              -->
+    <!-- ============================================================ -->
+    <section id="view-dashboard" class="page-view hidden py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      
+      <div class="flex flex-col md:flex-row md:items-center justify-between pb-6 mb-8 border-b border-slate-200 gap-4">
+        <div>
+          <span class="text-xs font-mono uppercase tracking-widest text-blue-600 font-bold">Facility Operations</span>
+          <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight mt-1">Operator Dashboard</h1>
+          <p class="text-slate-500 text-sm mt-0.5">Real-time occupancy analytics, utilization rates, and camera feed telemetry.</p>
+        </div>
+
+        <div class="flex items-center gap-2 bg-slate-100 p-1.5 rounded-xl border border-slate-200 text-xs font-medium">
+          <span class="px-3 py-1 rounded-lg bg-white shadow-sm font-bold text-slate-800">Central Parking Hub</span>
+          <span class="px-2 text-slate-500 font-mono">Sensors: 4 Cams OK</span>
+        </div>
+      </div>
+
+      <!-- KPIs (Section 11) -->
+      <div class="grid grid-cols-2 md:grid-cols-6 gap-3 mb-8">
+        
+        <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+          <div class="text-[11px] font-semibold text-slate-400 uppercase">Total Spaces</div>
+          <div id="dash-total-spaces" class="text-2xl font-bold font-mono text-slate-900 mt-1">40</div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+          <div class="text-[11px] font-semibold text-slate-400 uppercase">Current Occupancy</div>
+          <div id="dash-current-occupancy" class="text-2xl font-bold font-mono text-rose-600 mt-1">28</div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+          <div class="text-[11px] font-semibold text-slate-400 uppercase">Available Spaces</div>
+          <div id="dash-available-spaces" class="text-2xl font-bold font-mono text-emerald-600 mt-1">12</div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+          <div class="text-[11px] font-semibold text-slate-400 uppercase">Peak Occupancy</div>
+          <div class="text-2xl font-bold font-mono text-slate-800 mt-1">92%</div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+          <div class="text-[11px] font-semibold text-slate-400 uppercase">Average Occupancy</div>
+          <div class="text-2xl font-bold font-mono text-slate-800 mt-1">68%</div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+          <div class="text-[11px] font-semibold text-slate-400 uppercase">Utilization</div>
+          <div id="dash-occupancy-rate" class="text-2xl font-bold font-mono text-blue-600 mt-1">70%</div>
+        </div>
+
+      </div>
+
+      <!-- CHARTS SECTION (Section 11) -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        
+        <!-- Occupancy throughout the day -->
+        <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="font-bold text-base text-slate-900">Occupancy Throughout the Day</h3>
+              <p class="text-xs text-slate-500">Hourly vehicle density trend</p>
+            </div>
+            <span class="text-xs font-mono text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md font-semibold">Today</span>
+          </div>
+          <div class="h-64">
+            <canvas id="hourlyOccupancyChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Most occupied zones -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="font-bold text-base text-slate-900">Most Occupied Zones</h3>
+              <p class="text-xs text-slate-500">Zone-wise capacity breakdown</p>
+            </div>
+          </div>
+          <div class="h-64">
+            <canvas id="zonesBreakdownChart"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Live Availability Stream & Activity Logs -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- Available Spaces Over Time -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="font-bold text-base text-slate-900">Available Spaces Over Time</h3>
+              <p class="text-xs text-slate-500">Real-time rolling capacity stream</p>
+            </div>
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+          </div>
+          <div class="h-56">
+            <canvas id="availabilityTrendChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Operator Live Activity Feed -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-bold text-base text-slate-900">Live Vehicle Activity Feed</h3>
+              <span class="text-xs font-mono text-slate-400">YOLO CV Feed</span>
+            </div>
+            <div id="operator-activity-logs" class="space-y-2 max-h-56 overflow-y-auto pr-1">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    <!-- ============================================================ -->
+    <!-- VIEW 6: ADMIN DASHBOARD (Protected Admin Only)               -->
+    <!-- ============================================================ -->
+    <section id="view-admin-dashboard" class="page-view hidden">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        
+        <!-- Header Banner -->
+        <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 rounded-2xl p-6 text-white shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4 border border-slate-800">
+          <div>
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-mono font-bold mb-2">
+              <span>🛡️ ADMINISTRATOR CONTROL PANEL</span>
+            </div>
+            <h1 class="text-2xl font-extrabold tracking-tight">Facility Infrastructure Management</h1>
+            <p class="text-xs text-slate-300 mt-1">Single point of authority for space locks, floor plans, camera ROIs, and system overrides.</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <a href="#admin-floorplan" data-route="admin-floorplan" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition">Floor Plan Upload</a>
+            <a href="#admin-cameras" data-route="admin-cameras" class="px-4 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold text-xs transition">Camera Config</a>
+          </div>
+        </div>
+
+        <!-- System Overview Metrics Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+            <div class="text-[10px] font-mono text-slate-500 uppercase font-bold">Total Lots</div>
+            <div id="admin-stat-lots" class="text-2xl font-extrabold text-slate-900 font-mono mt-1">4</div>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+            <div class="text-[10px] font-mono text-slate-500 uppercase font-bold">Total Spaces</div>
+            <div id="admin-stat-spaces" class="text-2xl font-extrabold text-slate-900 font-mono mt-1">172</div>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+            <div class="text-[10px] font-mono text-slate-500 uppercase font-bold">Occupied</div>
+            <div id="admin-stat-occupied" class="text-2xl font-extrabold text-rose-600 font-mono mt-1">84</div>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+            <div class="text-[10px] font-mono text-slate-500 uppercase font-bold">Available</div>
+            <div id="admin-stat-available" class="text-2xl font-extrabold text-emerald-600 font-mono mt-1">78</div>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+            <div class="text-[10px] font-mono text-slate-500 uppercase font-bold">Active Cameras</div>
+            <div id="admin-stat-cameras" class="text-2xl font-extrabold text-blue-600 font-mono mt-1">14/14</div>
+          </div>
+          <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+            <div class="text-[10px] font-mono text-slate-500 uppercase font-bold">Incidents</div>
+            <div id="admin-stat-incidents" class="text-2xl font-extrabold text-amber-600 font-mono mt-1">2 Open</div>
+          </div>
+        </div>
+
+        <!-- Administrative Space Control & Override Panel -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+          <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
+            <div>
+              <h3 class="font-bold text-base text-slate-900">Administrative Parking Space Override</h3>
+              <p class="text-xs text-slate-500">Lock spaces, set maintenance mode, or release reservations across all parking lots.</p>
+            </div>
+            <span class="px-2.5 py-1 rounded bg-amber-100 text-amber-800 text-[10px] font-mono font-bold">ADMIN PRIVILEGE</span>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-3">
+            <label class="text-xs font-semibold text-slate-700">Target Space ID:</label>
+            <input type="number" id="admin-space-id-input" value="1" min="1" max="172" class="w-24 px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-mono font-bold focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+            
+            <button id="btn-admin-space-lock" class="px-3.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold transition">
+              🔒 Admin Lock (Reserved)
+            </button>
+            <button id="btn-admin-space-maintenance" class="px-3.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold transition">
+              🔧 Mark Maintenance
+            </button>
+            <button id="btn-admin-space-unlock" class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition">
+              🔓 Unlock / Set Available
+            </button>
+          </div>
+          <div id="admin-space-action-result" class="mt-3 text-xs font-mono text-slate-600 hidden"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- VIEW 7: ADMIN FLOOR PLAN SYSTEM (Protected Admin Only)        -->
+    <!-- ============================================================ -->
+    <section id="view-admin-floorplan" class="page-view hidden">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="text-xs font-mono text-amber-600 font-bold uppercase tracking-wider">Infrastructure Blueprint</span>
+            <h1 class="text-2xl font-bold text-slate-900">Floor Plan Configuration & Upload</h1>
+          </div>
+          <span class="px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-xs font-mono text-slate-600">Single Source of Truth</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+            <h3 class="font-bold text-slate-900 text-sm">Upload New Blueprint Image</h3>
+            <p class="text-xs text-slate-500">Upload architectural floor plan image (PNG, JPG, SVG) to calibrate spatial coordinates.</p>
+
+            <form id="admin-floorplan-form" class="space-y-4">
+              <div>
+                <label class="block text-xs font-medium text-slate-700 mb-1">Target Parking Facility</label>
+                <select id="admin-floorplan-lot" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300">
+                  <option value="1">Central Mall Parking (Lot #1)</option>
+                  <option value="2">City Center Parking (Lot #2)</option>
+                  <option value="3">Tech Park Parking (Lot #3)</option>
+                  <option value="4">Metro Station Parking (Lot #4)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs font-medium text-slate-700 mb-1">Select Image File</label>
+                <input type="file" id="admin-floorplan-file" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+              </div>
+
+              <button type="button" id="btn-upload-floorplan" class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition">
+                📤 Upload & Calibrate Blueprint
+              </button>
+            </form>
+            <div id="floorplan-upload-msg" class="text-xs font-mono text-emerald-600 hidden"></div>
+          </div>
+
+          <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <h3 class="font-bold text-slate-900 text-sm mb-2">Interactive Boundary & ROI Calibrator</h3>
+            <div class="aspect-video bg-slate-900 rounded-xl border border-slate-800 flex items-center justify-center relative overflow-hidden text-center p-6 text-slate-400 text-xs">
+              <div class="space-y-2">
+                <div class="text-3xl">📐</div>
+                <div class="font-mono text-white font-bold">Floor Plan Vector Overlay Active</div>
+                <div class="max-w-md mx-auto text-slate-400">Drag space polygon vertices to define detection ROIs for YOLO object detection. Changes update physical parking layout in real time.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- VIEW 8: ADMIN CAMERAS SYSTEM (Protected Admin Only)          -->
+    <!-- ============================================================ -->
+    <section id="view-admin-cameras" class="page-view hidden">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        <div>
+          <span class="text-xs font-mono text-amber-600 font-bold uppercase tracking-wider">Vision Hardware</span>
+          <h1 class="text-2xl font-bold text-slate-900">CCTV Camera ROI & Stream Management</h1>
+        </div>
+
+        <div id="admin-cameras-list-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- VIEW 9: ADMIN USERS MANAGEMENT (Protected Admin Only)        -->
+    <!-- ============================================================ -->
+    <section id="view-admin-users" class="page-view hidden">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        <div>
+          <span class="text-xs font-mono text-amber-600 font-bold uppercase tracking-wider">Security & Accounts</span>
+          <h1 class="text-2xl font-bold text-slate-900">Registered Platform Users & Session Overrides</h1>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <table class="w-full text-left text-xs text-slate-600">
+            <thead class="bg-slate-50 border-b border-slate-200 text-slate-700 uppercase font-mono text-[10px]">
+              <tr>
+                <th class="px-4 py-3">ID</th>
+                <th class="px-4 py-3">User Email</th>
+                <th class="px-4 py-3">Full Name</th>
+                <th class="px-4 py-3">Role</th>
+                <th class="px-4 py-3">Status</th>
+                <th class="px-4 py-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-users-table-body" class="divide-y divide-slate-100 font-mono">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================== -->
+  <!-- MODAL: AUTHENTICATION (Auth4 / Watermelon Design & Admin Auth) -->
+  <!-- ============================================================== -->
+  <div id="auth-modal" class="hidden fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative transform transition-all max-h-[92vh] overflow-y-auto">
+      <button id="close-auth-modal-btn" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-lg">✕</button>
+
+      <!-- BRAND HEADER -->
+      <div class="text-center mb-6">
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-rose-500 via-rose-400 to-emerald-500 text-white flex items-center justify-center mx-auto mb-3 text-2xl shadow-lg shadow-rose-500/20 font-bold">
+          🍉
+        </div>
+        <div class="flex items-center justify-center gap-2">
+          <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Watermelon</h2>
+          <span class="px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-mono font-bold">ParkVision AI</span>
+        </div>
+        <p class="text-xs text-slate-500 font-medium mt-1">Intelligent Parking & Vision Platform</p>
+      </div>
+
+      <!-- MAIN USER SIGN IN CONTAINER -->
+      <div id="user-login-container" class="space-y-4">
+        
+        <!-- Google Login Button -->
+        <button type="button" id="btn-google-login" class="w-full py-2.5 px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-semibold shadow-sm flex items-center justify-center gap-2.5 transition">
+          <svg class="w-4 h-4" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <span>Continue with Google</span>
+        </button>
+
+        <div class="relative my-3 flex items-center justify-center">
+          <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200"></div></div>
+          <span class="relative bg-white px-2.5 text-[10px] uppercase font-mono font-bold text-slate-400">Or continue with email</span>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Email address</label>
+          <input type="email" id="auth-email" placeholder="user@parkvision.ai" value="user@parkvision.ai" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none font-mono" />
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-xs font-semibold text-slate-700">Password</label>
+            <button type="button" id="btn-forgot-password" class="text-xs font-medium text-emerald-600 hover:text-emerald-700 hover:underline">Forgot password?</button>
+          </div>
+          <input type="password" id="auth-password" placeholder="••••••••" value="user123" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none font-mono" />
+        </div>
+
+        <!-- Remember Me Checkbox -->
+        <div class="flex items-center">
+          <input id="auth-remember" type="checkbox" class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500" checked />
+          <label for="auth-remember" class="ml-2 block text-xs text-slate-600 cursor-pointer select-none">Remember me for 30 days</label>
+        </div>
+
+        <button id="btn-user-signin" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-emerald-600 hover:from-rose-600 hover:to-emerald-700 text-white font-bold text-sm shadow-md shadow-emerald-500/20 transition">
+          SIGN IN
+        </button>
+
+        <!-- Don't have account / Create account toggle -->
+        <div class="text-center text-xs text-slate-600 pt-1">
+          Don't have an account? 
+          <button type="button" id="btn-to-create-account" class="font-bold text-emerald-600 hover:text-emerald-700 underline ml-1">Create account</button>
+        </div>
+
+        <div class="relative my-3 flex items-center justify-center">
+          <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200"></div></div>
+          <span class="relative bg-white px-2.5 text-[10px] uppercase font-mono font-bold text-slate-400">Portal Mode</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <button id="btn-switch-admin-mode" class="w-full py-2 rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold text-xs transition flex items-center justify-center gap-1">
+            <span>🛡️ ADMIN LOGIN</span>
+          </button>
+          <button id="btn-switch-user-mode" class="w-full py-2 rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-bold text-xs transition flex items-center justify-center gap-1">
+            <span>👤 USER LOGIN</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- CREATE ACCOUNT CONTAINER -->
+      <div id="create-account-container" class="hidden space-y-4">
+        <div class="text-center">
+          <h3 class="font-bold text-sm text-slate-800">Create new account</h3>
+          <p class="text-xs text-slate-500">Register as a driver to reserve smart parking bays</p>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Full Name</label>
+          <input type="text" id="reg-fullname" placeholder="Alex Morgan" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Email address</label>
+          <input type="email" id="reg-email" placeholder="alex@example.com" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none font-mono" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Password</label>
+          <input type="password" id="reg-password" placeholder="••••••••••••" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none font-mono" />
+        </div>
+
+        <button id="btn-submit-register" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition">
+          CREATE ACCOUNT
+        </button>
+
+        <div class="text-center text-xs text-slate-600 pt-1">
+          Already have an account? 
+          <button type="button" id="btn-back-to-signin" class="font-bold text-emerald-600 hover:text-emerald-700 underline ml-1">Sign in</button>
+        </div>
+      </div>
+
+      <!-- ADMIN LOGIN CONTAINER (Shown when Admin Login mode is active) -->
+      <div id="admin-login-container" class="hidden space-y-4">
+        <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-center">
+          <div class="font-extrabold text-sm tracking-wide uppercase">ADMIN ACCESS</div>
+          <div class="text-[11px] text-amber-700">Authorized personnel only</div>
+        </div>
+
+        <!-- Mandatory Error Feedback Container -->
+        <div id="admin-login-error" class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold text-center">
+          Invalid administrator credentials.<br/>Access denied.
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Administrator Email</label>
+          <input type="email" id="admin-email" placeholder="admin@parkvision.ai" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none font-mono" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Administrator Password</label>
+          <input type="password" id="admin-password" placeholder="••••••••••••" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none font-mono" />
+        </div>
+
+        <button id="btn-admin-submit" class="w-full py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm shadow-md shadow-amber-500/25 transition">
+          LOGIN
+        </button>
+
+        <button id="btn-back-to-main-login" class="w-full text-center text-xs text-slate-500 hover:text-slate-800 underline font-medium pt-1">
+          ← Back to User Login
+        </button>
+      </div>
+
+      <!-- FOOTER LINKS & COPYRIGHT (Auth4 Spec) -->
+      <div class="mt-6 pt-4 border-t border-slate-100 text-center space-y-2">
+        <div class="flex items-center justify-center gap-4 text-xs text-slate-500 font-medium">
+          <a href="#privacy" id="link-privacy" class="hover:text-slate-900 transition underline-offset-4 hover:underline">Privacy</a>
+          <span class="text-slate-300">•</span>
+          <a href="#terms" id="link-terms" class="hover:text-slate-900 transition underline-offset-4 hover:underline">Terms</a>
+          <span class="text-slate-300">•</span>
+          <a href="#support" id="link-support" class="hover:text-slate-900 transition underline-offset-4 hover:underline">Support</a>
+        </div>
+        <div class="text-[11px] text-slate-400 font-mono">
+          © 2026 Watermelon. All rights reserved.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- MODAL: SPACE DETAILS (Section 4)                               -->
+  <!-- ============================================================== -->
+  <div id="space-detail-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 relative transform transition-all">
+      <button id="close-modal-btn" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-lg">✕</button>
+
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <span class="text-[11px] font-mono uppercase text-slate-400 font-bold">Bay Details</span>
+          <h3 class="text-2xl font-black text-slate-900 font-mono">Parking Space: <span id="modal-space-id">A01</span></h3>
+        </div>
+        <div id="modal-status-badge"></div>
+      </div>
+
+      <div class="space-y-3 py-3 border-y border-slate-100 text-sm mb-5">
+        <div class="flex justify-between">
+          <span class="text-slate-500">Zone:</span>
+          <span id="modal-zone" class="font-semibold text-slate-800">Ground Floor</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Last Updated:</span>
+          <span id="modal-last-updated" class="font-mono text-slate-700">Just now</span>
+        </div>
+      </div>
+
+      <!-- Occupied Warning Banner -->
+      <div id="modal-occupied-warning" class="hidden mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs">
+        <div id="modal-occupied-msg" class="font-semibold">Space A02 is currently occupied.</div>
+        <div class="text-[11px] text-rose-600 mt-0.5">Please choose an alternate slot or tap below to filter.</div>
+      </div>
+
+      <!-- Action Button Container -->
+      <div id="modal-action-container">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <!-- ============================================================== -->
+  <!-- 14. FOOTER                                                     -->
+  <!-- ============================================================== -->
+  <footer class="bg-slate-900 text-slate-300 border-t border-slate-800 mt-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 pb-8 border-b border-slate-800">
+        
+        <!-- Brand & Description -->
+        <div>
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
+              🅿️
+            </div>
+            <span class="font-bold text-xl text-white tracking-tight">ParkVision AI</span>
+          </div>
+          <p class="text-sm text-slate-400 mt-2 max-w-sm">
+            “AI-powered parking intelligence for smarter cities.”
+          </p>
+        </div>
+
+        <!-- Links -->
+        <div class="flex flex-wrap gap-6 text-sm">
+          <a href="#home" data-route="home" class="hover:text-blue-400 transition">Home</a>
+          <a href="#live" data-route="live" class="hover:text-blue-400 transition">Live Parking</a>
+          <a href="#find" data-route="find" class="hover:text-blue-400 transition">Find Parking</a>
+          <a href="#ai" data-route="ai" class="hover:text-blue-400 transition">AI Detection</a>
+          <a href="#dashboard" data-route="dashboard" class="hover:text-blue-400 transition">Dashboard</a>
+        </div>
+
+      </div>
+
+      <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 font-mono">
+        <div>
+          © 2026 ParkVision AI. Autonomous Smart City Parking Platform.
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          <span>CV Models Ready • Hackathon Prototype</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/parkingService.js"></script>
+  <script src="js/cameraCanvas.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
