@@ -53,3 +53,6 @@ Thumbs.db
 
 # Subfolder clone artifact
 ParkVision/
+
+# Scratch files
+scratch_last_prompt.txt

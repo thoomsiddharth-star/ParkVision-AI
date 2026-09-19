@@ -1,5 +1,4 @@
 from app.services.parking_service import ParkingService
-from app.services.camera_service import CameraService
 from app.services.detection_service import DetectionService, DemoDetectionService, YOLODetectionService, get_detection_service
 from app.services.analytics_service import AnalyticsService
 from app.services.navigation_service import NavigationService
@@ -9,7 +8,6 @@ from app.services.websocket_manager import ws_manager
 
 __all__ = [
     "ParkingService",
-    "CameraService",
     "DetectionService",
     "DemoDetectionService",
     "YOLODetectionService",

@@ -4,7 +4,6 @@ from typing import List, Optional
 from app.database.database import get_db
 from app.models.incident import Incident
 from app.models.parking_lot import ParkingLot
-from app.models.camera import Camera
 from app.schemas.incident import (
     IncidentResponse, IncidentActionResponse, IncidentStatusEnum
 )
@@ -13,18 +12,17 @@ router = APIRouter(prefix="/incidents", tags=["Incidents"])
 
 def format_incident(inc: Incident, db: Session) -> IncidentResponse:
     lot_name = inc.lot.name if inc.lot else None
-    cam_name = inc.camera.name if inc.camera else None
     return IncidentResponse(
         id=inc.id,
         parking_lot_id=inc.parking_lot_id,
-        camera_id=inc.camera_id,
+        camera_id=None,
         type=inc.type,
         severity=inc.severity,
         description=inc.description,
         timestamp=inc.timestamp,
         status=inc.status,
         lot_name=lot_name,
-        camera_name=cam_name
+        camera_name=None
     )
 
 @router.get("", response_model=List[IncidentResponse], summary="List all security and parking incidents")

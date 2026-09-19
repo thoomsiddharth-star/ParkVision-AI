@@ -23,5 +23,4 @@ class ParkingLot(Base):
 
     # Relationships
     spaces = relationship("ParkingSpace", back_populates="lot", cascade="all, delete-orphan")
-    cameras = relationship("Camera", back_populates="lot", cascade="all, delete-orphan")
     incidents = relationship("Incident", back_populates="lot", cascade="all, delete-orphan")

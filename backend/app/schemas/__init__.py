@@ -3,7 +3,6 @@ from app.schemas.parking import (
     ParkingSpaceBase, ParkingSpaceResponse, SpaceStatusEnum, SpaceTypeEnum,
     SpaceSelectRequest, SpaceSelectResponse, LiveParkingResponse, WebSocketParkingUpdate
 )
-from app.schemas.camera import CameraBase, CameraResponse, CameraStatusResponse, CameraStatusEnum
 from app.schemas.analytics import (
     OccupancyAnalyticsResponse, DemandAnalyticsResponse, PeakHoursAnalyticsResponse,
     ParkingDurationAnalyticsResponse, EVUtilizationAnalyticsResponse,
@@ -25,7 +24,6 @@ __all__ = [
     "ParkingLotBase", "ParkingLotCreate", "ParkingLotResponse", "ParkingLotDetailResponse", "LotStatusEnum",
     "ParkingSpaceBase", "ParkingSpaceResponse", "SpaceStatusEnum", "SpaceTypeEnum",
     "SpaceSelectRequest", "SpaceSelectResponse", "LiveParkingResponse", "WebSocketParkingUpdate",
-    "CameraBase", "CameraResponse", "CameraStatusResponse", "CameraStatusEnum",
     "OccupancyAnalyticsResponse", "DemandAnalyticsResponse", "PeakHoursAnalyticsResponse",
     "ParkingDurationAnalyticsResponse", "EVUtilizationAnalyticsResponse",
     "AIStatusResponse", "AIPredictionsResponse", "AIInsightsResponse",

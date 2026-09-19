@@ -144,15 +144,36 @@ frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..
 index_file = os.path.join(frontend_dir, "index.html")
 js_dir = os.path.join(frontend_dir, "js")
 styles_file = os.path.join(frontend_dir, "styles.css")
+uploads_dir = os.path.join(frontend_dir, "uploads")
+os.makedirs(uploads_dir, exist_ok=True)
 
 if os.path.isdir(js_dir):
     app.mount("/js", StaticFiles(directory=js_dir), name="js")
+
+if os.path.isdir(uploads_dir):
+    app.mount("/uploads", StaticFiles(directory=uploads_dir), name="uploads")
 
 @app.get("/styles.css", include_in_schema=False)
 def serve_styles():
     if os.path.isfile(styles_file):
         return FileResponse(styles_file, media_type="text/css")
     raise HTTPException(status_code=404, detail="styles.css not found")
+
+@app.get("/admin-login", include_in_schema=False)
+@app.get("/admin-login.html", include_in_schema=False)
+def serve_admin_login():
+    admin_login_path = os.path.join(frontend_dir, "admin-login.html")
+    if os.path.isfile(admin_login_path):
+        return FileResponse(admin_login_path, media_type="text/html")
+    raise HTTPException(status_code=404, detail="admin-login.html not found")
+
+@app.get("/admin-dashboard", include_in_schema=False)
+@app.get("/admin-dashboard.html", include_in_schema=False)
+def serve_admin_dashboard():
+    admin_dash_path = os.path.join(frontend_dir, "admin-dashboard.html")
+    if os.path.isfile(admin_dash_path):
+        return FileResponse(admin_dash_path, media_type="text/html")
+    raise HTTPException(status_code=404, detail="admin-dashboard.html not found")
 
 @app.get("/", include_in_schema=False)
 def serve_index():

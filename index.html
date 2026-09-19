@@ -973,8 +973,13 @@
             <p class="text-xs text-slate-300 mt-1">Single point of authority for space locks, floor plans, camera ROIs, and system overrides.</p>
           </div>
           <div class="flex items-center gap-3">
-            <a href="#admin-floorplan" data-route="admin-floorplan" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition">Floor Plan Upload</a>
-            <a href="#admin-cameras" data-route="admin-cameras" class="px-4 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold text-xs transition">Camera Config</a>
+            <a href="#home" data-route="home" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition flex items-center gap-1.5 shadow">
+              <span>🚗</span>
+              <span>← Return to User Panel</span>
+            </a>
+            <a href="admin-dashboard.html" class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs transition flex items-center gap-1.5 shadow">
+              <span>📐 Full Floor Plan & Cameras Console →</span>
+            </a>
           </div>
         </div>
 
@@ -1205,18 +1210,9 @@
           <button type="button" id="btn-to-create-account" class="font-bold text-emerald-600 hover:text-emerald-700 underline ml-1">Create account</button>
         </div>
 
-        <div class="relative my-3 flex items-center justify-center">
-          <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200"></div></div>
-          <span class="relative bg-white px-2.5 text-[10px] uppercase font-mono font-bold text-slate-400">Portal Mode</span>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <button id="btn-switch-admin-mode" class="w-full py-2 rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold text-xs transition flex items-center justify-center gap-1">
-            <span>🛡️ ADMIN LOGIN</span>
-          </button>
-          <button id="btn-switch-user-mode" class="w-full py-2 rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-bold text-xs transition flex items-center justify-center gap-1">
-            <span>👤 USER LOGIN</span>
-          </button>
+        <div class="text-center text-xs text-slate-500 pt-3 border-t border-slate-100 mt-2">
+          Administrator? 
+          <a href="admin-login.html" class="text-amber-600 hover:text-amber-800 font-bold underline ml-1">Open Admin Portal →</a>
         </div>
       </div>
 
@@ -1250,36 +1246,6 @@
           Already have an account? 
           <button type="button" id="btn-back-to-signin" class="font-bold text-emerald-600 hover:text-emerald-700 underline ml-1">Sign in</button>
         </div>
-      </div>
-
-      <!-- ADMIN LOGIN CONTAINER (Shown when Admin Login mode is active) -->
-      <div id="admin-login-container" class="hidden space-y-4">
-        <div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-center">
-          <div class="font-extrabold text-sm tracking-wide uppercase">ADMIN ACCESS</div>
-          <div class="text-[11px] text-amber-700">Authorized personnel only</div>
-        </div>
-
-        <!-- Mandatory Error Feedback Container -->
-        <div id="admin-login-error" class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold text-center">
-          Invalid administrator credentials.<br/>Access denied.
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Administrator Email</label>
-          <input type="email" id="admin-email" placeholder="admin@parkvision.ai" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none font-mono" />
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Administrator Password</label>
-          <input type="password" id="admin-password" placeholder="••••••••••••" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none font-mono" />
-        </div>
-
-        <button id="btn-admin-submit" class="w-full py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm shadow-md shadow-amber-500/25 transition">
-          LOGIN
-        </button>
-
-        <button id="btn-back-to-main-login" class="w-full text-center text-xs text-slate-500 hover:text-slate-800 underline font-medium pt-1">
-          ← Back to User Login
-        </button>
       </div>
 
       <!-- FOOTER LINKS & COPYRIGHT (Auth4 Spec) -->

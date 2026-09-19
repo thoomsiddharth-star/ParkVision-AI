@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Operations Portal — ParkVision AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .nav-headset-active {
+      background-color: #fef3c7;
+      color: #92400e;
+      border-color: #f59e0b;
+      box-shadow: 0 1px 3px 0 rgba(245, 158, 11, 0.2);
+    }
+    .grid-bg {
+      background-size: 20px 20px;
+      background-image: 
+        linear-gradient(to right, rgba(226, 232, 240, 0.6) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(226, 232, 240, 0.6) 1px, transparent 1px);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-900 text-slate-100 flex flex-col antialiased">
+
+  <!-- TOP ADMIN BAR -->
+  <header class="bg-slate-950 border-b border-slate-800 sticky top-0 z-50 px-4 sm:px-6 py-3">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
+      
+      <!-- Brand & Badges -->
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-rose-500 flex items-center justify-center text-white text-lg shadow">
+            🍉
+          </div>
+          <div>
+            <div class="font-extrabold text-sm tracking-tight text-white flex items-center gap-2">
+              <span>Watermelon</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">ADMIN CONSOLE</span>
+            </div>
+            <div class="text-[10px] text-slate-400 font-mono">ParkVision AI Smart Vision Platform</div>
+          </div>
+        </a>
+      </div>
+
+      <!-- THREE NAVIGATING HEADSETS (TABS) -->
+      <div class="flex items-center bg-slate-900 p-1 rounded-2xl border border-slate-800">
+        <button 
+          id="tab-btn-floorplan" 
+          onclick="switchHeadset('floorplan')"
+          class="nav-headset-btn nav-headset-active px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 border border-transparent"
+        >
+          <span>📐</span>
+          <span>1. Floor Plan & Coverage</span>
+        </button>
+        <button 
+          id="tab-btn-camera" 
+          onclick="switchHeadset('camera')"
+          class="nav-headset-btn px-3 sm:px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2 border border-transparent"
+        >
+          <span>📹</span>
+          <span>2. Live Camera Output</span>
+          <span id="badge-traffic-speed" class="px-1.5 py-0.2 rounded text-[9px] font-mono bg-amber-500/20 text-amber-400">10-30s</span>
+        </button>
+        <button 
+          id="tab-btn-traffic" 
+          onclick="switchHeadset('traffic')"
+          class="nav-headset-btn px-3 sm:px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2 border border-transparent"
+        >
+          <span>📊</span>
+          <span>3. Traffic & Spaces</span>
+        </button>
+      </div>
+
+      <!-- User Profile & Action -->
+      <div class="flex items-center gap-2 sm:gap-3 text-xs">
+        <div class="hidden sm:flex flex-col text-right font-mono">
+          <span class="font-bold text-slate-200">admin@parkvision.ai</span>
+          <span class="text-[10px] text-emerald-400">● Session Active</span>
+        </div>
+        <!-- Prominent Back to User Panel Button -->
+        <a href="index.html#home" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition text-xs flex items-center gap-1.5 shadow-md shadow-emerald-600/30">
+          <span>🚗</span>
+          <span>← Back to User Panel</span>
+        </a>
+        <button onclick="handleLogout()" class="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 transition text-xs font-semibold border border-rose-500/20">
+          Logout
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- QUICK PORTAL SWITCH SUB-BAR -->
+  <div class="bg-slate-950/90 border-b border-slate-800/80 px-4 sm:px-6 py-2">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
+      <div class="flex items-center gap-2 text-slate-400">
+        <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+        <span class="text-amber-300 font-bold">Admin Mode Active</span>
+        <span class="text-slate-600">•</span>
+        <span class="text-slate-300 font-mono">ParkVision Central Facility</span>
+      </div>
+      <div class="flex items-center gap-2 font-medium">
+        <span class="text-slate-400 hidden sm:inline">Go to User Views:</span>
+        <a href="index.html#home" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 font-semibold transition flex items-center gap-1">
+          <span>🏠 User Home</span>
+        </a>
+        <a href="index.html#live" class="px-2.5 py-1 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/30 font-semibold transition flex items-center gap-1">
+          <span>🅿️ Live Parking Bays</span>
+        </a>
+        <a href="index.html#find" class="px-2.5 py-1 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/30 font-semibold transition flex items-center gap-1">
+          <span>🔍 Find Parking</span>
+        </a>
+        <a href="index.html#ai" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-semibold transition flex items-center gap-1">
+          <span>📹 Driver CCTV</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
+
+    <!-- ================================================================= -->
+    <!-- HEADSET 1: FLOOR PLAN & COVERAGE BOUNDARY AREA                    -->
+    <!-- ================================================================= -->
+    <section id="headset-floorplan" class="space-y-6">
+      
+      <!-- Top Overview Banner -->
+      <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-4 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <h2 class="text-xl font-bold text-white tracking-tight">Floor Plan & Area Coverage Boundary</h2>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30">EXACT MASK</span>
+          </div>
+          <p class="text-xs text-slate-400 mt-1 max-w-2xl">
+            Insert a parking facility floor plan blueprint and define the <strong class="text-amber-400">exact area the camera should cover</strong> — <span class="underline decoration-amber-500 font-semibold">covering not more and not less than that</span>. Any area outside this designated boundary is masked out from computer vision scanning.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <label class="cursor-pointer px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs shadow-md transition flex items-center gap-2">
+            <span>📤</span>
+            <span>Insert Custom Floor Plan</span>
+            <input type="file" id="input-floorplan-upload" accept="image/*" class="hidden" onchange="handleFloorPlanUpload(event)">
+          </label>
+          <button onclick="loadTemplatePlan('north')" class="px-3 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-xs font-medium text-slate-200 transition">
+            Template: North Deck
+          </button>
+          <button onclick="loadTemplatePlan('multilevel')" class="px-3 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-xs font-medium text-slate-200 transition">
+            Template: Level 1 Bay
+          </button>
+        </div>
+      </div>
+
+      <!-- Editor Canvas & Boundary Controls Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        
+        <!-- Left: Interactive Canvas Viewport (3 cols) -->
+        <div class="lg:col-span-3 bg-slate-950 rounded-2xl border border-slate-800 p-4 shadow-xl flex flex-col">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-3 text-xs">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+              <span class="font-bold text-slate-200">Floor Plan Viewport:</span>
+              <span id="current-plan-name" class="font-mono text-amber-400">Central Parking - Ground Deck</span>
+            </div>
+            <div class="flex items-center gap-2 font-mono text-[11px] text-slate-400">
+              <span>Boundary Area: <strong id="boundary-metric" class="text-emerald-400">1,240 m² (100% Locked)</strong></span>
+            </div>
+          </div>
+
+          <!-- Canvas Container -->
+          <div class="relative w-full rounded-xl overflow-hidden bg-slate-900 border border-slate-800 grid-bg min-h-[420px] flex items-center justify-center">
+            <canvas id="floorPlanCanvas" width="800" height="460" class="w-full h-auto cursor-crosshair rounded-lg"></canvas>
+            
+            <!-- Floating overlay HUD -->
+            <div class="absolute top-3 left-3 bg-slate-950/80 backdrop-blur border border-slate-800 px-3 py-1.5 rounded-lg text-[10px] font-mono text-slate-300">
+              Mode: <span id="boundary-mode-label" class="text-amber-400 font-bold">EXACT BOUNDARY COVERAGE</span>
+            </div>
+
+            <div class="absolute bottom-3 right-3 bg-slate-950/80 backdrop-blur border border-slate-800 px-3 py-1.5 rounded-lg text-[10px] font-mono text-slate-300">
+              Drag corners to adjust boundary | Grid: 40 bays
+            </div>
+          </div>
+
+          <!-- Canvas Action Toolbar -->
+          <div class="pt-4 flex flex-wrap items-center justify-between gap-3 text-xs">
+            <div class="flex items-center gap-2">
+              <button onclick="setBoundaryShape('standard')" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-medium">
+                🔲 Standard Rectangle
+              </button>
+              <button onclick="setBoundaryShape('lshape')" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-medium">
+                📐 Perimeter Polygon
+              </button>
+              <button onclick="resetBoundary()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-medium">
+                🔄 Reset Coverage
+              </button>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="saveBoundaryConfig()" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow transition flex items-center gap-1.5">
+                <span>💾 Save & Lock Boundary</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Boundary Area Diagnostics & Rules (1 col) -->
+        <div class="space-y-4">
+          
+          <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-4 space-y-3">
+            <h3 class="font-bold text-sm text-slate-200">Coverage Boundary Mask</h3>
+            <p class="text-[11px] text-slate-400 leading-relaxed">
+              Enforces strict CCTV camera detection constraints. Computer vision will ignore any vehicle outside the drawn boundary box.
+            </p>
+
+            <div class="space-y-2 pt-2 text-xs font-mono">
+              <div class="flex justify-between p-2 rounded bg-slate-900 border border-slate-800">
+                <span class="text-slate-400">Coverage Status:</span>
+                <span class="text-emerald-400 font-bold">NOT MORE, NOT LESS</span>
+              </div>
+              <div class="flex justify-between p-2 rounded bg-slate-900 border border-slate-800">
+                <span class="text-slate-400">Designated Bays:</span>
+                <span id="stat-boundary-bays" class="text-amber-400 font-bold">40 / 40 Inside</span>
+              </div>
+              <div class="flex justify-between p-2 rounded bg-slate-900 border border-slate-800">
+                <span class="text-slate-400">Boundary Area:</span>
+                <span id="stat-boundary-area" class="text-slate-200 font-bold">1,240 m²</span>
+              </div>
+              <div class="flex justify-between p-2 rounded bg-slate-900 border border-slate-800">
+                <span class="text-slate-400">Leakage / Overflow:</span>
+                <span class="text-emerald-400 font-bold">0.0% (Zero Leak)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Parameters -->
+          <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-4 space-y-3">
+            <h3 class="font-bold text-sm text-slate-200">Floor Attributes</h3>
+            <div class="space-y-2 text-xs">
+              <div>
+                <label class="text-[11px] text-slate-400 block mb-1">Facility Name</label>
+                <input type="text" id="cfg-facility-name" value="ParkVision Central Parking" class="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-slate-200 font-mono text-xs" />
+              </div>
+              <div>
+                <label class="text-[11px] text-slate-400 block mb-1">Floor Level</label>
+                <select id="cfg-floor-level" class="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-slate-200 font-mono text-xs">
+                  <option value="GF">Ground Floor (Main Lot)</option>
+                  <option value="B1">Basement Deck 1</option>
+                  <option value="L1">Level 1 (North Deck)</option>
+                  <option value="L2">Level 2 (South Deck)</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-[11px] text-slate-400 block mb-1">Total Parking Bays</label>
+                <input type="number" id="cfg-total-bays" value="40" class="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-slate-200 font-mono text-xs" />
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- HEADSET 2: LIVE CAMERA OUTPUT (10s to 30s ADAPTIVE REFRESH)        -->
+    <!-- ================================================================= -->
+    <section id="headset-camera" class="hidden space-y-6">
+      
+      <!-- Top Control Bar for Traffic-Adaptive Timing -->
+      <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-4 sm:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <h2 class="text-xl font-bold text-white tracking-tight">Live Camera Computer Vision Output</h2>
+            <span class="relative flex h-3 w-3">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 mt-1 max-w-2xl">
+            Live AI stream analyzes bay occupancy inside the configured boundary. <strong class="text-amber-400">Updates dynamically every 10 to 30 seconds</strong> depending on parking lot vehicle traffic.
+          </p>
+        </div>
+
+        <!-- Live Traffic Mode & Timer HUD -->
+        <div class="flex flex-wrap items-center gap-3 bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+          
+          <!-- Traffic Indicator Badge -->
+          <div class="flex items-center gap-2 px-3 py-1 rounded-lg bg-slate-800 border border-slate-700">
+            <span id="traffic-pulse-dot" class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+            <div class="text-left font-mono">
+              <div class="text-[9px] text-slate-400 uppercase">Traffic Status</div>
+              <div id="traffic-level-text" class="text-xs font-bold text-amber-400">High Traffic (10s)</div>
+            </div>
+          </div>
+
+          <!-- Countdown Progress Display -->
+          <div class="flex items-center gap-2 px-3 py-1 rounded-lg bg-slate-800 border border-slate-700 font-mono">
+            <div class="text-left">
+              <div class="text-[9px] text-slate-400 uppercase">Next Live Scan</div>
+              <div class="text-xs font-bold text-emerald-400 flex items-center gap-1">
+                <span>⏱️</span>
+                <span id="countdown-seconds">10</span>s
+              </div>
+            </div>
+          </div>
+
+          <button onclick="triggerImmediateScan()" class="px-3 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs transition flex items-center gap-1.5 shadow">
+            <span>⚡ Scan Now</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Traffic Speed Controller Selector -->
+      <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-950 p-3 rounded-2xl border border-slate-800 text-xs">
+        <div class="flex items-center gap-2 text-slate-300 font-medium">
+          <span>🚦 Select Vehicle Traffic Activity Rate:</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button 
+            id="traffic-btn-high" 
+            onclick="setTrafficMode('high')"
+            class="px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/40 font-bold transition flex items-center gap-1.5"
+          >
+            <span>🏎️ High Traffic (10s Interval)</span>
+          </button>
+          <button 
+            id="traffic-btn-med" 
+            onclick="setTrafficMode('medium')"
+            class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700 font-medium transition flex items-center gap-1.5"
+          >
+            <span>🚗 Moderate Traffic (20s Interval)</span>
+          </button>
+          <button 
+            id="traffic-btn-low" 
+            onclick="setTrafficMode('low')"
+            class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700 font-medium transition flex items-center gap-1.5"
+          >
+            <span>🌙 Low Traffic (30s Interval)</span>
+          </button>
+          <button 
+            id="traffic-btn-auto" 
+            onclick="setTrafficMode('auto')"
+            class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700 font-medium transition flex items-center gap-1.5"
+          >
+            <span>🔄 Auto-Adaptive Flow</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Live CCTV Canvas Stream -->
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        
+        <!-- Left: CCTV Video Display (3 cols) -->
+        <div class="lg:col-span-3 bg-slate-950 rounded-2xl border border-slate-800 p-4 shadow-xl">
+          
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-3 text-xs">
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded bg-rose-500 text-white font-mono font-bold text-[10px] animate-pulse">● REC LIVE</span>
+              <span class="font-bold text-slate-200">CCTV IP Camera 01:</span>
+              <span class="font-mono text-amber-400">RTSP://192.168.1.104/live/north_lot</span>
+            </div>
+            <div class="flex items-center gap-3 font-mono text-[11px] text-slate-400">
+              <span>FPS: <strong class="text-emerald-400">30.0</strong></span>
+              <span>Model: <strong class="text-blue-400">YOLOv8-ParkVision</strong></span>
+              <span>Latency: <strong class="text-emerald-400">14ms</strong></span>
+            </div>
+          </div>
+
+          <!-- CCTV Canvas Output -->
+          <div class="relative w-full rounded-xl overflow-hidden bg-black border border-slate-800 min-h-[440px] flex items-center justify-center">
+            <canvas id="cctvLiveCanvas" width="800" height="460" class="w-full h-auto rounded-lg"></canvas>
+
+            <!-- Scanline Radar Effect -->
+            <div id="cctv-scanline" class="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-emerald-500/10 to-transparent h-12 w-full animate-bounce"></div>
+
+            <!-- Top Left Camera HUD Overlay -->
+            <div class="absolute top-4 left-4 font-mono text-xs text-emerald-400 bg-black/70 p-2.5 rounded-lg border border-emerald-500/30 backdrop-blur space-y-1">
+              <div>CAM-01 [NORTH GATE ENTRANCE]</div>
+              <div id="hud-timestamp">2026-09-20 00:45:00 UTC</div>
+              <div class="text-[10px] text-slate-300">Coverage Mask: <span class="text-emerald-400 font-bold">ACTIVE (100% BOUNDARY)</span></div>
+            </div>
+
+            <!-- Bottom Right Stats Overlay -->
+            <div class="absolute bottom-4 right-4 font-mono text-xs bg-black/80 p-2.5 rounded-lg border border-slate-800 backdrop-blur space-y-0.5 text-right">
+              <div>Detected Vehicles: <strong id="hud-cars-count" class="text-amber-400">28</strong></div>
+              <div>Available Bays: <strong id="hud-avail-count" class="text-emerald-400">12</strong></div>
+              <div>Avg AI Confidence: <strong class="text-blue-400">96.4%</strong></div>
+            </div>
+          </div>
+
+          <!-- Camera Switcher -->
+          <div class="pt-4 flex items-center justify-between text-xs font-mono">
+            <div class="flex items-center gap-2">
+              <span class="text-slate-400">Switch Stream:</span>
+              <button onclick="switchCameraFeed(1)" class="px-2.5 py-1 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30 font-bold">CAM-01 North</button>
+              <button onclick="switchCameraFeed(2)" class="px-2.5 py-1 rounded bg-slate-800 text-slate-400 hover:text-slate-200">CAM-02 South</button>
+              <button onclick="switchCameraFeed(3)" class="px-2.5 py-1 rounded bg-slate-800 text-slate-400 hover:text-slate-200">CAM-03 EV Bay</button>
+            </div>
+            <div class="text-slate-500 text-[11px]">
+              Adaptive Refresh: Every <span id="label-interval-rate" class="text-amber-400 font-bold">10s</span> based on vehicle movement
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right: Real-time CV Detections Breakdown (1 col) -->
+        <div class="space-y-4">
+          
+          <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="font-bold text-sm text-slate-200">Live AI Detections</h3>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-blue-500/20 text-blue-400 font-bold">YOLOv8</span>
+            </div>
+            <div class="text-[11px] text-slate-400">
+              Real-time classification tags identified within the boundary mask:
+            </div>
+
+            <div id="detections-stream-list" class="space-y-2 text-xs font-mono max-h-[320px] overflow-y-auto pr-1">
+              <!-- Dynamically rendered -->
+            </div>
+          </div>
+
+          <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-4 space-y-2">
+            <h3 class="font-bold text-sm text-slate-200">Adaptive Timing Rules</h3>
+            <p class="text-[11px] text-slate-400 leading-relaxed">
+              When lot ingress/egress is heavy (>5 movements/min), refresh accelerates to <strong>10s</strong>. During calm evening hours, system throttles to <strong>30s</strong> to save compute.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- HEADSET 3: TRAFFIC & SPACE MANAGEMENT CONSOLE                     -->
+    <!-- ================================================================= -->
+    <section id="headset-traffic" class="hidden space-y-6">
+      
+      <!-- Top KPIs -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-4">
+          <div class="text-xs text-slate-400 font-medium">Total Monitored Spaces</div>
+          <div id="stat-total-spaces" class="text-2xl font-extrabold text-white font-mono mt-1">40</div>
+          <div class="text-[10px] text-emerald-400 mt-1">All strictly within boundary</div>
+        </div>
+        <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-4">
+          <div class="text-xs text-slate-400 font-medium">Occupied Bays</div>
+          <div id="stat-occupied-spaces" class="text-2xl font-extrabold text-rose-400 font-mono mt-1">28</div>
+          <div class="text-[10px] text-slate-400 mt-1">70% Occupancy Rate</div>
+        </div>
+        <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-4">
+          <div class="text-xs text-slate-400 font-medium">Available Bays</div>
+          <div id="stat-available-spaces" class="text-2xl font-extrabold text-emerald-400 font-mono mt-1">12</div>
+          <div class="text-[10px] text-slate-400 mt-1">Ready for driver reservation</div>
+        </div>
+        <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-4">
+          <div class="text-xs text-slate-400 font-medium">CCTV Cameras Monitored</div>
+          <div class="text-2xl font-extrabold text-blue-400 font-mono mt-1">4 / 4</div>
+          <div class="text-[10px] text-slate-400 mt-1">100% Operational Uptime</div>
+        </div>
+      </div>
+
+      <!-- Space Override Console & Live Traffic Log -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Space Status Override -->
+        <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-5 space-y-4">
+          <h3 class="font-bold text-sm text-slate-200 flex items-center gap-2">
+            <span>🛡️</span>
+            <span>Manual Bay Status Override</span>
+          </h3>
+          <p class="text-xs text-slate-400">
+            Enforce immediate lock or maintenance hold on any bay in the facility.
+          </p>
+
+          <div class="space-y-3 pt-1">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Target Bay Number</label>
+              <select id="select-override-bay" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 font-mono text-xs">
+                <!-- Populated via JS -->
+              </select>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 pt-1">
+              <button onclick="overrideBayStatus('LOCK')" class="py-2 px-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs transition">
+                🔒 Lock
+              </button>
+              <button onclick="overrideBayStatus('UNLOCK')" class="py-2 px-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition">
+                🔓 Free
+              </button>
+              <button onclick="overrideBayStatus('MAINTENANCE')" class="py-2 px-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition">
+                🚧 Block
+              </button>
+            </div>
+
+            <div id="override-feedback" class="hidden p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs font-mono text-emerald-400 text-center">
+              Status updated successfully.
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Vehicle Traffic Audit Log (2 cols) -->
+        <div class="lg:col-span-2 bg-slate-800/80 border border-slate-700 rounded-2xl p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-sm text-slate-200 flex items-center gap-2">
+              <span>📋</span>
+              <span>Live Vehicle Traffic Audit Log</span>
+            </h3>
+            <span class="text-[11px] font-mono text-slate-400">Auto-streaming</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="text-[10px] text-slate-400 uppercase bg-slate-900/60 border-b border-slate-700">
+                <tr>
+                  <th class="p-2.5">Time</th>
+                  <th class="p-2.5">Event</th>
+                  <th class="p-2.5">Bay</th>
+                  <th class="p-2.5">Vehicle Type</th>
+                  <th class="p-2.5">Confidence</th>
+                </tr>
+              </thead>
+              <tbody id="traffic-log-table-body" class="divide-y divide-slate-800 text-slate-300">
+                <!-- Populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="admin-toast" class="fixed bottom-5 right-5 z-50 transform transition-all duration-300 translate-y-24 opacity-0 pointer-events-none px-4 py-3 rounded-xl shadow-2xl font-medium text-xs flex items-center gap-2 bg-slate-800 text-white border border-slate-700">
+    <span id="toast-icon">ℹ️</span>
+    <span id="toast-text">Message</span>
+  </div>
+
+  <!-- SCRIPT LOGIC -->
+  <script>
+    // -------------------------------------------------------------
+    // Global State & Telemetry
+    // -------------------------------------------------------------
+    let currentHeadset = 'floorplan';
+    let trafficIntervalSeconds = 10;
+    let countdownRemaining = 10;
+    let countdownTimer = null;
+    let trafficMode = 'high'; // 'high' (10s), 'medium' (20s), 'low' (30s), 'auto'
+    let currentCamId = 1;
+
+    // Floor Plan Boundary Geometry State
+    let boundary = {
+      x: 60,
+      y: 50,
+      width: 680,
+      height: 360,
+      locked: true,
+      points: [
+        { x: 60, y: 50 },
+        { x: 740, y: 50 },
+        { x: 740, y: 410 },
+        { x: 60, y: 410 }
+      ]
+    };
+
+    // 40 Parking Bays
+    let bays = [];
+    for (let i = 1; i <= 40; i++) {
+      bays.push({
+        id: `A${String(i).padStart(2, '0')}`,
+        num: i,
+        status: [1, 3, 5, 7, 9, 13, 17, 21, 25, 29, 33, 37].includes(i) ? 'AVAILABLE' : 'OCCUPIED',
+        vehicleType: [1, 3, 5, 7, 9, 13, 17, 21, 25, 29, 33, 37].includes(i) ? null : (i % 2 === 0 ? 'SUV' : 'Sedan'),
+        confidence: [1, 3, 5, 7, 9, 13, 17, 21, 25, 29, 33, 37].includes(i) ? null : (94 + (i % 5))
+      });
+    }
+
+    // Initialize View
+    window.addEventListener('DOMContentLoaded', () => {
+      initFloorPlanCanvas();
+      initCCTVCanvas();
+      initBaySelector();
+      renderDetectionsList();
+      renderTrafficLog();
+      startTrafficAdaptiveLoop();
+    });
+
+    // -------------------------------------------------------------
+    // Headset Navigation Switcher
+    // -------------------------------------------------------------
+    function switchHeadset(tabName) {
+      currentHeadset = tabName;
+
+      // Update buttons
+      const tabs = ['floorplan', 'camera', 'traffic'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`tab-btn-${t}`);
+        const sec = document.getElementById(`headset-${t}`);
+        if (t === tabName) {
+          btn.className = "nav-headset-btn nav-headset-active px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 border border-transparent";
+          sec.classList.remove('hidden');
+        } else {
+          btn.className = "nav-headset-btn px-3 sm:px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2 border border-transparent";
+          sec.classList.add('hidden');
+        }
+      });
+
+      if (tabName === 'floorplan') drawFloorPlan();
+      if (tabName === 'camera') drawCCTVFrame();
+    }
+
+    // -------------------------------------------------------------
+    // HEADSET 1: Floor Plan & Boundary Mask Editor
+    // -------------------------------------------------------------
+    let fpCanvas, fpCtx;
+    let customFloorImage = null;
+
+    function initFloorPlanCanvas() {
+      fpCanvas = document.getElementById('floorPlanCanvas');
+      if (!fpCanvas) return;
+      fpCtx = fpCanvas.getContext('2d');
+      drawFloorPlan();
+    }
+
+    function drawFloorPlan() {
+      if (!fpCtx) return;
+      const w = fpCanvas.width;
+      const h = fpCanvas.height;
+
+      // Clear
+      fpCtx.fillStyle = '#090d16';
+      fpCtx.fillRect(0, 0, w, h);
+
+      // Draw custom uploaded floor plan or blueprint grid
+      if (customFloorImage) {
+        fpCtx.drawImage(customFloorImage, 0, 0, w, h);
+      } else {
+        // Blueprint asphalt floor rendering
+        fpCtx.fillStyle = '#111827';
+        fpCtx.fillRect(20, 20, w - 40, h - 40);
+
+        // Driveway lane marking
+        fpCtx.strokeStyle = '#374151';
+        fpCtx.lineWidth = 2;
+        fpCtx.setLineDash([8, 8]);
+        fpCtx.beginPath();
+        fpCtx.moveTo(w / 2, 60);
+        fpCtx.lineTo(w / 2, h - 60);
+        fpCtx.stroke();
+        fpCtx.setLineDash([]);
+      }
+
+      // 1. Draw Outside Excluded Zone Mask (Area NOT to be covered)
+      fpCtx.fillStyle = 'rgba(2, 6, 23, 0.72)'; // Darkened excluded area
+      fpCtx.fillRect(0, 0, w, h);
+
+      // 2. Clear out the Exact Boundary Area (The area it SHOULD cover, not more and not less)
+      fpCtx.save();
+      fpCtx.beginPath();
+      fpCtx.rect(boundary.x, boundary.y, boundary.width, boundary.height);
+      fpCtx.clip();
+
+      // Inside Covered Area: bright blueprint background
+      fpCtx.fillStyle = customFloorImage ? 'rgba(0,0,0,0)' : '#172033';
+      fpCtx.fillRect(boundary.x, boundary.y, boundary.width, boundary.height);
+
+      // Draw 40 Parking bays strictly inside boundary
+      const cols = 10;
+      const rows = 4;
+      const cellW = (boundary.width - 40) / cols;
+      const cellH = (boundary.height - 60) / rows;
+
+      bays.forEach((bay, idx) => {
+        const c = idx % cols;
+        const r = Math.floor(idx / cols);
+        const bx = boundary.x + 20 + c * cellW;
+        const by = boundary.y + 20 + r * (cellH + 10);
+
+        // Bay slot outline
+        fpCtx.lineWidth = 1.5;
+        if (bay.status === 'AVAILABLE') {
+          fpCtx.strokeStyle = 'rgba(16, 185, 129, 0.8)';
+          fpCtx.fillStyle = 'rgba(16, 185, 129, 0.15)';
+        } else if (bay.status === 'RESERVED') {
+          fpCtx.strokeStyle = 'rgba(245, 158, 11, 0.8)';
+          fpCtx.fillStyle = 'rgba(245, 158, 11, 0.2)';
+        } else {
+          fpCtx.strokeStyle = 'rgba(244, 63, 94, 0.8)';
+          fpCtx.fillStyle = 'rgba(244, 63, 94, 0.2)';
+        }
+
+        fpCtx.strokeRect(bx, by, cellW - 6, cellH - 4);
+        fpCtx.fillRect(bx, by, cellW - 6, cellH - 4);
+
+        // Bay Code Text
+        fpCtx.fillStyle = '#f8fafc';
+        fpCtx.font = 'bold 10px JetBrains Mono, monospace';
+        fpCtx.fillText(bay.id, bx + 4, by + 14);
+
+        if (bay.status === 'OCCUPIED') {
+          fpCtx.fillStyle = 'rgba(244, 63, 94, 0.9)';
+          fpCtx.font = '8px Plus Jakarta Sans';
+          fpCtx.fillText(bay.vehicleType || 'Car', bx + 4, by + 28);
+        }
+      });
+
+      fpCtx.restore();
+
+      // 3. Highlight Boundary Polygon Perimeter with Golden Neon Stroke
+      fpCtx.strokeStyle = '#f59e0b'; // Amber-500
+      fpCtx.lineWidth = 2.5;
+      fpCtx.strokeRect(boundary.x, boundary.y, boundary.width, boundary.height);
+
+      // Corner handles
+      const corners = [
+        { x: boundary.x, y: boundary.y },
+        { x: boundary.x + boundary.width, y: boundary.y },
+        { x: boundary.x + boundary.width, y: boundary.y + boundary.height },
+        { x: boundary.x, y: boundary.y + boundary.height }
+      ];
+
+      corners.forEach((pt, i) => {
+        fpCtx.fillStyle = '#f59e0b';
+        fpCtx.beginPath();
+        fpCtx.arc(pt.x, pt.y, 6, 0, Math.PI * 2);
+        fpCtx.fill();
+        fpCtx.strokeStyle = '#ffffff';
+        fpCtx.lineWidth = 1.5;
+        fpCtx.stroke();
+      });
+
+      // Boundary Tag Banner
+      fpCtx.fillStyle = '#f59e0b';
+      fpCtx.fillRect(boundary.x, boundary.y - 18, 180, 18);
+      fpCtx.fillStyle = '#0f172a';
+      fpCtx.font = 'bold 10px JetBrains Mono, monospace';
+      fpCtx.fillText("🔒 ACTIVE COVERAGE BOUNDARY", boundary.x + 6, boundary.y - 5);
+    }
+
+    function handleFloorPlanUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          customFloorImage = img;
+          document.getElementById('current-plan-name').textContent = file.name;
+          drawFloorPlan();
+          showToast(`Custom floor plan "${file.name}" loaded successfully!`, 'success');
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function loadTemplatePlan(type) {
+      customFloorImage = null;
+      if (type === 'north') {
+        document.getElementById('current-plan-name').textContent = "Template: Ground Floor (North Deck)";
+        boundary.x = 60;
+        boundary.y = 50;
+        boundary.width = 680;
+        boundary.height = 360;
+      } else {
+        document.getElementById('current-plan-name').textContent = "Template: Level 1 Multi-Deck Wing";
+        boundary.x = 100;
+        boundary.y = 70;
+        boundary.width = 600;
+        boundary.height = 320;
+      }
+      drawFloorPlan();
+      showToast(`Loaded ${document.getElementById('current-plan-name').textContent}`, 'info');
+    }
+
+    function setBoundaryShape(type) {
+      if (type === 'standard') {
+        boundary.x = 60;
+        boundary.y = 50;
+        boundary.width = 680;
+        boundary.height = 360;
+      } else {
+        boundary.x = 90;
+        boundary.y = 60;
+        boundary.width = 620;
+        boundary.height = 340;
+      }
+      drawFloorPlan();
+      showToast("Boundary coverage updated.", "info");
+    }
+
+    function resetBoundary() {
+      boundary.x = 60;
+      boundary.y = 50;
+      boundary.width = 680;
+      boundary.height = 360;
+      drawFloorPlan();
+      showToast("Boundary mask reset to full bay perimeter.", "info");
+    }
+
+    function saveBoundaryConfig() {
+      localStorage.setItem('pv_boundary_config', JSON.stringify(boundary));
+      showToast("Boundary area saved! Computer vision detection strictly locked to designated zone.", "success");
+    }
+
+    // -------------------------------------------------------------
+    // HEADSET 2: Live Camera Output (Traffic-Adaptive 10s–30s)
+    // -------------------------------------------------------------
+    let cctvCanvas, cctvCtx;
+
+    function initCCTVCanvas() {
+      cctvCanvas = document.getElementById('cctvLiveCanvas');
+      if (!cctvCanvas) return;
+      cctvCtx = cctvCanvas.getContext('2d');
+      drawCCTVFrame();
+    }
+
+    function drawCCTVFrame() {
+      if (!cctvCtx) return;
+      const w = cctvCanvas.width;
+      const h = cctvCanvas.height;
+
+      // Realistic CCTV camera background (Asphalt parking lot)
+      cctvCtx.fillStyle = '#1e2530';
+      cctvCtx.fillRect(0, 0, w, h);
+
+      // Roadway lines
+      cctvCtx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+      cctvCtx.lineWidth = 2;
+      cctvCtx.beginPath();
+      cctvCtx.moveTo(40, h / 2);
+      cctvCtx.lineTo(w - 40, h / 2);
+      cctvCtx.stroke();
+
+      // Draw Parking Bays with AI Bounding Boxes
+      const cols = 10;
+      const rows = 4;
+      const cellW = (w - 100) / cols;
+      const cellH = (h - 100) / rows;
+
+      bays.forEach((bay, idx) => {
+        const c = idx % cols;
+        const r = Math.floor(idx / cols);
+        const bx = 50 + c * cellW;
+        const by = 40 + r * (cellH + 8);
+
+        // Ground slot marking
+        cctvCtx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        cctvCtx.lineWidth = 1;
+        cctvCtx.strokeRect(bx, by, cellW - 6, cellH - 4);
+
+        if (bay.status === 'OCCUPIED') {
+          // Parked car vehicle box
+          cctvCtx.fillStyle = '#334155';
+          cctvCtx.fillRect(bx + 4, by + 4, cellW - 14, cellH - 12);
+
+          // YOLO Bounding Box (Rose / Red)
+          cctvCtx.strokeStyle = '#f43f5e';
+          cctvCtx.lineWidth = 2;
+          cctvCtx.strokeRect(bx + 2, by + 2, cellW - 10, cellH - 8);
+
+          // YOLO Class Tag Badge
+          cctvCtx.fillStyle = '#f43f5e';
+          cctvCtx.fillRect(bx + 2, by - 12, 54, 12);
+          cctvCtx.fillStyle = '#ffffff';
+          cctvCtx.font = 'bold 8px JetBrains Mono, monospace';
+          cctvCtx.fillText(`${bay.vehicleType} ${bay.confidence}%`, bx + 4, by - 3);
+
+        } else if (bay.status === 'RESERVED') {
+          // Amber lock box
+          cctvCtx.strokeStyle = '#f59e0b';
+          cctvCtx.lineWidth = 1.5;
+          cctvCtx.strokeRect(bx + 2, by + 2, cellW - 10, cellH - 8);
+
+          cctvCtx.fillStyle = '#f59e0b';
+          cctvCtx.fillRect(bx + 2, by - 12, 48, 12);
+          cctvCtx.fillStyle = '#000000';
+          cctvCtx.font = 'bold 8px JetBrains Mono, monospace';
+          cctvCtx.fillText(`LOCKED`, bx + 4, by - 3);
+
+        } else {
+          // AVAILABLE Slot (Green AI Box)
+          cctvCtx.strokeStyle = '#10b981';
+          cctvCtx.lineWidth = 1.5;
+          cctvCtx.strokeRect(bx + 2, by + 2, cellW - 10, cellH - 8);
+
+          cctvCtx.fillStyle = '#10b981';
+          cctvCtx.fillRect(bx + 2, by - 12, 38, 12);
+          cctvCtx.fillStyle = '#000000';
+          cctvCtx.font = 'bold 8px JetBrains Mono, monospace';
+          cctvCtx.fillText(`FREE`, bx + 4, by - 3);
+        }
+
+        // Bay number text
+        cctvCtx.fillStyle = '#94a3b8';
+        cctvCtx.font = '8px JetBrains Mono, monospace';
+        cctvCtx.fillText(bay.id, bx + cellW - 24, by + cellH - 8);
+      });
+
+      // Update HUD timestamp
+      const now = new Date();
+      const timeStr = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
+      const hudTime = document.getElementById('hud-timestamp');
+      if (hudTime) hudTime.textContent = timeStr;
+
+      // Update HUD Counts
+      const occCount = bays.filter(b => b.status === 'OCCUPIED').length;
+      const availCount = bays.filter(b => b.status === 'AVAILABLE').length;
+      document.getElementById('hud-cars-count').textContent = occCount;
+      document.getElementById('hud-avail-count').textContent = availCount;
+    }
+
+    function switchCameraFeed(camNum) {
+      currentCamId = camNum;
+      showToast(`Switched feed to CCTV IP Camera 0${camNum}`, 'info');
+      drawCCTVFrame();
+    }
+
+    // -------------------------------------------------------------
+    // Traffic-Adaptive Timing Engine (10s to 30s)
+    // -------------------------------------------------------------
+    function setTrafficMode(mode) {
+      trafficMode = mode;
+      
+      const btnHigh = document.getElementById('traffic-btn-high');
+      const btnMed = document.getElementById('traffic-btn-med');
+      const btnLow = document.getElementById('traffic-btn-low');
+      const btnAuto = document.getElementById('traffic-btn-auto');
+
+      [btnHigh, btnMed, btnLow, btnAuto].forEach(b => {
+        b.className = "px-3 py-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700 font-medium transition flex items-center gap-1.5";
+      });
+
+      const dot = document.getElementById('traffic-pulse-dot');
+      const text = document.getElementById('traffic-level-text');
+      const speedBadge = document.getElementById('badge-traffic-speed');
+
+      if (mode === 'high') {
+        trafficIntervalSeconds = 10;
+        btnHigh.className = "px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/40 font-bold transition flex items-center gap-1.5";
+        text.textContent = "High Traffic (10s)";
+        text.className = "text-xs font-bold text-amber-400";
+        dot.className = "w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse";
+        speedBadge.textContent = "10s (High)";
+      } else if (mode === 'medium') {
+        trafficIntervalSeconds = 20;
+        btnMed.className = "px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-400 border border-blue-500/40 font-bold transition flex items-center gap-1.5";
+        text.textContent = "Moderate Traffic (20s)";
+        text.className = "text-xs font-bold text-blue-400";
+        dot.className = "w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse";
+        speedBadge.textContent = "20s (Med)";
+      } else if (mode === 'low') {
+        trafficIntervalSeconds = 30;
+        btnLow.className = "px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-bold transition flex items-center gap-1.5";
+        text.textContent = "Low Traffic (30s)";
+        text.className = "text-xs font-bold text-emerald-400";
+        dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse";
+        speedBadge.textContent = "30s (Low)";
+      } else {
+        // Auto: picks between 10s and 30s based on occupancy fluctuations
+        trafficIntervalSeconds = 15;
+        btnAuto.className = "px-3 py-1.5 rounded-lg bg-purple-500/20 text-purple-400 border border-purple-500/40 font-bold transition flex items-center gap-1.5";
+        text.textContent = "Auto-Adaptive (15s)";
+        text.className = "text-xs font-bold text-purple-400";
+        dot.className = "w-2.5 h-2.5 rounded-full bg-purple-400 animate-pulse";
+        speedBadge.textContent = "Auto Flow";
+      }
+
+      countdownRemaining = trafficIntervalSeconds;
+      document.getElementById('label-interval-rate').textContent = `${trafficIntervalSeconds}s`;
+      showToast(`Camera live scan interval adapted to ${trafficIntervalSeconds} seconds`, 'info');
+    }
+
+    function startTrafficAdaptiveLoop() {
+      if (countdownTimer) clearInterval(countdownTimer);
+      countdownRemaining = trafficIntervalSeconds;
+
+      countdownTimer = setInterval(() => {
+        countdownRemaining--;
+        const el = document.getElementById('countdown-seconds');
+        if (el) el.textContent = countdownRemaining;
+
+        if (countdownRemaining <= 0) {
+          executeLiveCameraScan();
+          countdownRemaining = trafficIntervalSeconds;
+        }
+      }, 1000);
+    }
+
+    function triggerImmediateScan() {
+      executeLiveCameraScan();
+      countdownRemaining = trafficIntervalSeconds;
+      showToast("Immediate computer vision scan completed!", "success");
+    }
+
+    function executeLiveCameraScan() {
+      // Simulate live vehicle arrival / exit inside boundary
+      const randomBayIdx = Math.floor(Math.random() * bays.length);
+      const targetBay = bays[randomBayIdx];
+
+      const prevStatus = targetBay.status;
+      if (targetBay.status === 'AVAILABLE') {
+        targetBay.status = 'OCCUPIED';
+        targetBay.vehicleType = Math.random() > 0.5 ? 'SUV' : 'Sedan';
+        targetBay.confidence = Math.floor(92 + Math.random() * 7);
+        logTrafficEvent("ARRIVAL", targetBay.id, targetBay.vehicleType, `${targetBay.confidence}%`);
+      } else if (targetBay.status === 'OCCUPIED') {
+        targetBay.status = 'AVAILABLE';
+        logTrafficEvent("DEPARTURE", targetBay.id, targetBay.vehicleType || 'Car', 'Vacated');
+        targetBay.vehicleType = null;
+        targetBay.confidence = null;
+      }
+
+      // Re-draw CCTV and Floor plan
+      drawCCTVFrame();
+      drawFloorPlan();
+      renderDetectionsList();
+      updateDashboardStats();
+    }
+
+    // -------------------------------------------------------------
+    // HEADSET 3: Space Controls & Traffic Audit Log
+    // -------------------------------------------------------------
+    function initBaySelector() {
+      const select = document.getElementById('select-override-bay');
+      if (!select) return;
+      select.innerHTML = bays.map(b => `<option value="${b.id}">Bay ${b.id} (${b.status})</option>`).join('');
+    }
+
+    function overrideBayStatus(action) {
+      const select = document.getElementById('select-override-bay');
+      const bayId = select.value;
+      const bay = bays.find(b => b.id === bayId);
+      if (!bay) return;
+
+      if (action === 'LOCK') {
+        bay.status = 'RESERVED';
+      } else if (action === 'UNLOCK') {
+        bay.status = 'AVAILABLE';
+        bay.vehicleType = null;
+      } else {
+        bay.status = 'BLOCKED';
+      }
+
+      const fb = document.getElementById('override-feedback');
+      fb.classList.remove('hidden');
+      fb.textContent = `✅ Bay ${bay.id} override set to ${bay.status}`;
+      setTimeout(() => fb.classList.add('hidden'), 3500);
+
+      initBaySelector();
+      drawCCTVFrame();
+      drawFloorPlan();
+      updateDashboardStats();
+      showToast(`Bay ${bay.id} status manually set to ${bay.status}`, 'success');
+    }
+
+    function renderDetectionsList() {
+      const list = document.getElementById('detections-stream-list');
+      if (!list) return;
+
+      const occupied = bays.filter(b => b.status === 'OCCUPIED').slice(0, 6);
+      list.innerHTML = occupied.map(b => `
+        <div class="flex items-center justify-between p-2 rounded bg-slate-900 border border-slate-800">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+            <span class="font-bold text-slate-200">${b.id}</span>
+            <span class="text-slate-400 font-sans">${b.vehicleType}</span>
+          </div>
+          <span class="text-blue-400 font-bold">${b.confidence}%</span>
+        </div>
+      `).join('');
+    }
+
+    let trafficEvents = [
+      { time: '00:44:12', event: 'ARRIVAL', bay: 'A14', vehicle: 'White SUV', conf: '97%' },
+      { time: '00:42:30', event: 'DEPARTURE', bay: 'A05', vehicle: 'Sedan', conf: 'Vacated' },
+      { time: '00:40:18', event: 'ARRIVAL', bay: 'A22', vehicle: 'EV Hatchback', conf: '95%' },
+      { time: '00:38:05', event: 'ARRIVAL', bay: 'A08', vehicle: 'Black Sedan', conf: '98%' },
+      { time: '00:35:40', event: 'DEPARTURE', bay: 'A19', vehicle: 'Compact SUV', conf: 'Vacated' }
+    ];
+
+    function logTrafficEvent(event, bay, vehicle, conf) {
+      const now = new Date();
+      const timeStr = now.toTimeString().split(' ')[0];
+      trafficEvents.unshift({ time: timeStr, event, bay, vehicle, conf });
+      if (trafficEvents.length > 8) trafficEvents.pop();
+      renderTrafficLog();
+    }
+
+    function renderTrafficLog() {
+      const tbody = document.getElementById('traffic-log-table-body');
+      if (!tbody) return;
+
+      tbody.innerHTML = trafficEvents.map(e => `
+        <tr class="hover:bg-slate-800/50 transition">
+          <td class="p-2.5 text-slate-400">${e.time}</td>
+          <td class="p-2.5">
+            <span class="px-1.5 py-0.5 rounded text-[9px] font-bold ${e.event === 'ARRIVAL' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'}">${e.event}</span>
+          </td>
+          <td class="p-2.5 font-bold text-slate-200">${e.bay}</td>
+          <td class="p-2.5 text-slate-300 font-sans">${e.vehicle}</td>
+          <td class="p-2.5 text-blue-400">${e.conf}</td>
+        </tr>
+      `).join('');
+    }
+
+    function updateDashboardStats() {
+      const occ = bays.filter(b => b.status === 'OCCUPIED').length;
+      const avail = bays.filter(b => b.status === 'AVAILABLE').length;
+
+      const elOcc = document.getElementById('stat-occupied-spaces');
+      const elAvail = document.getElementById('stat-available-spaces');
+      if (elOcc) elOcc.textContent = occ;
+      if (elAvail) elAvail.textContent = avail;
+    }
+
+    function showToast(msg, type = 'info') {
+      const toast = document.getElementById('admin-toast');
+      const text = document.getElementById('toast-text');
+      const icon = document.getElementById('toast-icon');
+
+      text.textContent = msg;
+      icon.textContent = type === 'success' ? '✅' : (type === 'error' ? '❌' : 'ℹ️');
+
+      toast.classList.remove('translate-y-24', 'opacity-0', 'pointer-events-none');
+      setTimeout(() => {
+        toast.classList.add('translate-y-24', 'opacity-0', 'pointer-events-none');
+      }, 3500);
+    }
+
+    function handleLogout() {
+      localStorage.removeItem('pv_token');
+      localStorage.removeItem('pv_role');
+      localStorage.removeItem('pv_user');
+      window.location.href = 'admin-login.html';
+    }
+  </script>
+</body>
+</html>

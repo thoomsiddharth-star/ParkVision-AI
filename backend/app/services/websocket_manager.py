@@ -34,4 +34,13 @@ class WebSocketManager:
         for dead in dead_connections:
             self.disconnect(dead)
 
+    async def broadcast_space_update(self, space_id: int, space_number: str = "", status: str = ""):
+        message = {
+            "type": "space_update",
+            "space_id": space_id,
+            "space_number": space_number,
+            "status": status
+        }
+        await self.broadcast(message)
+
 ws_manager = WebSocketManager()
