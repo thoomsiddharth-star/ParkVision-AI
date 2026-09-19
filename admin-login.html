@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Portal — ParkVision AI</title>
+  <title>Admin Operations Portal — ParkVision AI</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,12 +13,12 @@
     .font-mono { font-family: 'JetBrains Mono', monospace; }
   </style>
 </head>
-<body class="min-h-screen bg-slate-100 flex flex-col justify-between antialiased text-slate-800 p-4 sm:p-6">
+<body class="min-h-screen bg-slate-100 flex flex-col justify-between antialiased text-slate-800 p-4 sm:p-6 lg:p-8">
   
-  <!-- Header / Brand -->
-  <header class="max-w-md w-full mx-auto pt-6 flex items-center justify-between">
-    <a href="index.html" class="flex items-center gap-2.5 group">
-      <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform border border-white/20">
+  <!-- Header / Brand Bar -->
+  <header class="max-w-6xl w-full mx-auto pt-2 sm:pt-4 flex items-center justify-between gap-4">
+    <a href="index.html" class="flex items-center gap-3 group">
+      <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform border border-white/20">
         <svg class="w-6 h-6 text-white" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M7 15V9C7 7.89543 7.89543 7 9 7H15" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
           <path d="M41 15V9C41 7.89543 40.1046 7 39 7H33" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
@@ -30,100 +30,215 @@
         </svg>
       </div>
       <div>
-        <div class="font-extrabold text-base tracking-tight text-slate-900 leading-tight">ParkVision<span class="text-blue-600">AI</span></div>
-        <div class="text-[10px] font-mono font-bold text-amber-600 tracking-wider uppercase">Operations Console</div>
+        <div class="font-extrabold text-lg tracking-tight text-slate-900 leading-tight">ParkVision<span class="text-blue-600">AI</span></div>
+        <div class="text-[11px] font-mono font-bold text-amber-600 tracking-wider uppercase">Operations Console & Facility Control</div>
       </div>
     </a>
-    <a href="index.html" class="text-xs font-semibold text-slate-600 hover:text-slate-900 transition flex items-center gap-1">
-      <span>← Driver Portal</span>
-    </a>
+
+    <!-- System Telemetry Status (Replaces the obsolete driver button) -->
+    <div class="flex items-center gap-3">
+      <div class="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-slate-200 shadow-sm">
+        <span class="relative flex h-2.5 w-2.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+        </span>
+        <span class="text-xs font-mono font-semibold text-slate-700">Inference Core: <span class="text-emerald-600 font-bold">ONLINE</span></span>
+      </div>
+      <div class="px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-800 text-xs font-mono font-bold flex items-center gap-1.5">
+        <span>🛡️</span>
+        <span>SUPERADMIN GATEWAY</span>
+      </div>
+    </div>
   </header>
 
-  <!-- Main Login Card -->
-  <main class="max-w-md w-full mx-auto my-8 bg-white rounded-3xl border border-slate-200 shadow-xl p-8 sm:p-10 relative">
+  <!-- Main Content Grid -->
+  <main class="max-w-6xl w-full mx-auto my-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
     
-    <!-- Shield / Admin Icon -->
-    <div class="text-center mb-6">
-      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-white text-3xl mx-auto mb-3 shadow-lg shadow-amber-500/25">
-        🛡️
-      </div>
-      <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Administrator Access</h1>
-      <p class="text-xs text-slate-500 mt-1 font-medium">Authorized personnel only • Smart Parking Operations</p>
-    </div>
-
-    <!-- Security Warning Banner -->
-    <div class="mb-5 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-center">
-      <div class="font-bold text-xs uppercase tracking-wider">RESTRICTED CONSOLE</div>
-      <div class="text-[11px] text-amber-700">Floor plan configuration, boundary masks & live camera telemetry</div>
-    </div>
-
-    <!-- Error Alert Box -->
-    <div id="admin-error-box" class="hidden mb-5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold text-center">
-      Invalid administrator credentials. Access denied.
-    </div>
-
-    <!-- Admin Form -->
-    <form id="admin-login-form" class="space-y-4">
-      <div>
-        <label class="block text-xs font-semibold text-slate-700 mb-1">Administrator Email</label>
-        <input 
-          type="email" 
-          id="admin-email" 
-          required
-          value="admin@parkvision.ai"
-          placeholder="admin@parkvision.ai" 
-          class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-mono focus:ring-2 focus:ring-amber-500 focus:outline-none transition"
-        />
-      </div>
-
-      <div>
-        <div class="flex items-center justify-between mb-1">
-          <label class="block text-xs font-semibold text-slate-700">Administrator Password</label>
-          <button type="button" id="btn-show-hint" class="text-[11px] text-amber-600 hover:text-amber-800 font-medium">
-            Demo Key?
-          </button>
+    <!-- LEFT COLUMN: What Does It Do & Instructions for Admins (7 cols) -->
+    <section class="lg:col-span-7 space-y-6">
+      
+      <!-- Headline & System Overview -->
+      <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 relative overflow-hidden">
+        <div class="absolute -right-6 -bottom-6 w-40 h-40 bg-blue-50 rounded-full blur-2xl pointer-events-none"></div>
+        
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-lg text-xs font-mono font-bold bg-blue-50 text-blue-700 border border-blue-200 mb-4">
+          <span>ℹ️</span>
+          <span>ADMINISTRATIVE CAPABILITIES</span>
         </div>
-        <input 
-          type="password" 
-          id="admin-password" 
-          required
-          value="theasp@1234"
-          placeholder="••••••••••••" 
-          class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-mono focus:ring-2 focus:ring-amber-500 focus:outline-none transition"
-        />
-        <div id="hint-text" class="hidden mt-1 text-[11px] text-slate-500 font-mono">
-          Default Hackathon Key: <code class="text-amber-700 font-bold bg-amber-50 px-1 py-0.5 rounded">theasp@1234</code>
+
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-snug">
+          What does the Admin Console do?
+        </h1>
+        <p class="text-sm text-slate-600 mt-3 leading-relaxed">
+          The ParkVision AI Admin Console is the central command center for parking lot operators, site engineers, and municipal facility controllers. Once logged in, you command three high-precision navigating headsets:
+        </p>
+
+        <!-- Three Navigating Headsets Breakdown -->
+        <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+          
+          <!-- Headset 1 -->
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-blue-300 transition group">
+            <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-lg mb-3 font-bold group-hover:scale-105 transition-transform">
+              📐
+            </div>
+            <div class="text-[11px] font-mono font-bold text-blue-600 uppercase tracking-wider">Headset 1</div>
+            <div class="font-bold text-slate-900 text-sm mt-0.5">Floor Plan Ingestion</div>
+            <p class="text-[12px] text-slate-500 mt-1.5 leading-relaxed">
+              Upload architectural layouts (AutoCAD/PNG/SVG), configure scale factors, and calibrate exact bay dimensions.
+            </p>
+          </div>
+
+          <!-- Headset 2 -->
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-emerald-300 transition group">
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-lg mb-3 font-bold group-hover:scale-105 transition-transform">
+              🎯
+            </div>
+            <div class="text-[11px] font-mono font-bold text-emerald-600 uppercase tracking-wider">Headset 2</div>
+            <div class="font-bold text-slate-900 text-sm mt-0.5">Coverage Mask (ROI)</div>
+            <p class="text-[12px] text-slate-500 mt-1.5 leading-relaxed">
+              Draw precise polygon boundary masks covering strictly the designated lot—not more and not less.
+            </p>
+          </div>
+
+          <!-- Headset 3 -->
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-amber-300 transition group">
+            <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-lg mb-3 font-bold group-hover:scale-105 transition-transform">
+              📹
+            </div>
+            <div class="text-[11px] font-mono font-bold text-amber-600 uppercase tracking-wider">Headset 3</div>
+            <div class="font-bold text-slate-900 text-sm mt-0.5">Live Camera Output</div>
+            <p class="text-[12px] text-slate-500 mt-1.5 leading-relaxed">
+              Real-time multi-camera CCTV feeds updating dynamically every 10–30s based on vehicle traffic.
+            </p>
+          </div>
+
         </div>
       </div>
 
-      <div class="pt-2">
-        <button 
-          type="submit" 
-          id="btn-admin-login-submit"
-          class="w-full py-3 rounded-xl bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white font-bold text-sm shadow-md shadow-amber-500/25 transition flex items-center justify-center gap-2"
-        >
-          <span id="btn-label">LOGIN TO ADMIN CONSOLE</span>
-          <span id="btn-spinner" class="hidden w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-        </button>
-      </div>
-    </form>
+      <!-- Step-by-Step Instructions For Administrators -->
+      <div class="bg-gradient-to-br from-slate-900 via-slate-950 to-indigo-950 text-white rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-lg relative overflow-hidden">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">📋</span>
+            <h2 class="text-lg font-bold tracking-tight text-white">Instructions for Admin Login</h2>
+          </div>
+          <span class="text-[11px] font-mono text-amber-400 bg-amber-500/20 px-2.5 py-0.5 rounded border border-amber-500/30 font-bold">OPERATIONAL PROTOCOL</span>
+        </div>
 
-    <div class="mt-6 pt-5 border-t border-slate-100 text-center">
-      <a href="index.html" class="text-xs font-semibold text-slate-500 hover:text-slate-800 transition underline">
-        ← Back to User Login
-      </a>
-    </div>
+        <ol class="space-y-3.5 text-xs text-slate-300 leading-relaxed">
+          <li class="flex items-start gap-3">
+            <span class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center font-mono font-bold shrink-0 text-xs">1</span>
+            <div>
+              <strong class="text-white">Verify Designated Administrator Email:</strong> Use your enterprise account or the pre-authorized master administrative account (<code class="text-cyan-300 font-mono">admin@parkvision.ai</code>).
+            </div>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center font-mono font-bold shrink-0 text-xs">2</span>
+            <div>
+              <strong class="text-white">Enter Operations Security Key:</strong> Provide your secure password. For testing or hackathon demonstration, click <span class="text-amber-300 font-semibold underline decoration-dotted">"⚡ Fill Demo Key"</span> on the login form.
+            </div>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center font-mono font-bold shrink-0 text-xs">3</span>
+            <div>
+              <strong class="text-white">Command Facility Controls:</strong> Upon authentication, you will be redirected to the Admin Dashboard to insert floor plans, calibrate camera coverage boundaries, and view live vehicle traffic streams.
+            </div>
+          </li>
+        </ol>
+      </div>
+
+    </section>
+
+    <!-- RIGHT COLUMN: Administrator Login Card (5 cols) -->
+    <section class="lg:col-span-5">
+      <div class="bg-white rounded-3xl border border-slate-200 shadow-xl p-7 sm:p-9 relative">
+        
+        <!-- Shield / Admin Icon -->
+        <div class="text-center mb-6">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-white text-3xl mx-auto mb-3 shadow-lg shadow-amber-500/25">
+            🛡️
+          </div>
+          <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Admin Sign In</h2>
+          <p class="text-xs text-slate-500 mt-1 font-medium">Authorized personnel only • Operations Gateway</p>
+        </div>
+
+        <!-- Security Warning Banner -->
+        <div class="mb-5 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-center">
+          <div class="font-bold text-xs uppercase tracking-wider">RESTRICTED ACCESS</div>
+          <div class="text-[11px] text-amber-700">Floor plans, dynamic masks & live camera telemetry</div>
+        </div>
+
+        <!-- Error Alert Box -->
+        <div id="admin-error-box" class="hidden mb-5 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold text-center">
+          Invalid administrator credentials. Access denied.
+        </div>
+
+        <!-- Admin Form -->
+        <form id="admin-login-form" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Administrator Email</label>
+            <input 
+              type="email" 
+              id="admin-email" 
+              required
+              value="admin@parkvision.ai"
+              placeholder="admin@parkvision.ai" 
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-mono focus:ring-2 focus:ring-amber-500 focus:outline-none transition"
+            />
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs font-semibold text-slate-700">Administrator Password</label>
+              <button type="button" id="btn-show-hint" class="text-[11px] text-amber-600 hover:text-amber-800 font-semibold flex items-center gap-1">
+                <span>⚡ Fill Demo Key</span>
+              </button>
+            </div>
+            <input 
+              type="password" 
+              id="admin-password" 
+              required
+              value="theasp@1234"
+              placeholder="••••••••••••" 
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-mono focus:ring-2 focus:ring-amber-500 focus:outline-none transition"
+            />
+            <div id="hint-text" class="hidden mt-2 p-2 rounded-lg bg-amber-50 border border-amber-200 text-[11px] text-slate-600 font-mono">
+              Key active: <code class="text-amber-800 font-bold">theasp@1234</code> (Master Administrator)
+            </div>
+          </div>
+
+          <div class="pt-2">
+            <button 
+              type="submit" 
+              id="btn-admin-login-submit"
+              class="w-full py-3.5 rounded-xl bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white font-bold text-sm shadow-md shadow-amber-500/25 transition flex items-center justify-center gap-2"
+            >
+              <span id="btn-label">LOGIN TO ADMIN CONSOLE</span>
+              <span id="btn-spinner" class="hidden w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+            </button>
+          </div>
+        </form>
+
+        <div class="mt-6 pt-5 border-t border-slate-100 text-center">
+          <a href="index.html" class="text-xs font-semibold text-slate-500 hover:text-slate-800 transition flex items-center justify-center gap-1.5">
+            <span>←</span>
+            <span>Return to Public User Portal</span>
+          </a>
+        </div>
+
+      </div>
+    </section>
 
   </main>
 
   <!-- Footer -->
-  <footer class="max-w-md w-full mx-auto pb-6 text-center space-y-2">
+  <footer class="max-w-6xl w-full mx-auto pb-6 text-center space-y-2">
     <div class="flex items-center justify-center gap-4 text-xs text-slate-500 font-medium">
-      <a href="#" class="hover:text-slate-900 transition">Privacy</a>
+      <a href="#" class="hover:text-slate-900 transition">Security Policy</a>
       <span class="text-slate-300">•</span>
-      <a href="#" class="hover:text-slate-900 transition">Terms</a>
+      <a href="#" class="hover:text-slate-900 transition">Terms of Access</a>
       <span class="text-slate-300">•</span>
-      <a href="#" class="hover:text-slate-900 transition">Support</a>
+      <a href="#" class="hover:text-slate-900 transition">Operations Support</a>
     </div>
     <div class="text-[11px] text-slate-400 font-mono">
       © 2026 ParkVision AI. All rights reserved.
@@ -142,6 +257,8 @@
     const hintText = document.getElementById('hint-text');
 
     btnHint.addEventListener('click', () => {
+      emailInput.value = "admin@parkvision.ai";
+      passwordInput.value = "theasp@1234";
       hintText.classList.toggle('hidden');
     });
 
